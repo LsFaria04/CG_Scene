@@ -1,9 +1,5 @@
 import { CGFscene, CGFcamera, CGFaxis } from "../lib/CGF.js";
-import { MyDiamond } from "./MyDiamond.js";
-import { MyTriangle } from "./MyTriangle.js";
-import { MyTriangleSmall } from "./MyTriangleSmall.js";
-import { MyTriangleBig } from "./MyTriangleBig.js";
-import { MyParallelogram } from "./MyParallelogram.js";
+import { MyTangram } from "./MyTangram.js";
 
 /**
  * MyScene
@@ -29,26 +25,13 @@ export class MyScene extends CGFscene {
 
     //Initialize scene objects
     this.axis = new CGFaxis(this);
-    this.diamond = new MyDiamond(this);
-    this.triangle = new MyTriangle(this);
-    this.parallelogram = new MyParallelogram(this);
-    this.smalltriangle = new MyTriangleSmall(this);
-    this.bigtriangle = new MyTriangleBig(this);
+    this.tangram = new MyTangram(this);
 
     //Objects connected to MyInterface
     this.displayAxis = true;
     this.scaleFactor = 0.5;
-    this.tx = -1.8;
-    this.ty = 2.8;
-    this.tz = 0;
-    this.angle = 0;
 
-
-    this.displayDiamond = true;
-    this.displayTriangle = false;
-    this.displayParallelogram = false;
-    this.displaySmallTriangle = true;
-    this.displayBigTriangle = false;
+    this.displayTangram = true;
   }
   initLights() {
     this.lights[0].setPosition(15, 2, 5, 1);
@@ -87,24 +70,6 @@ export class MyScene extends CGFscene {
 
     this.setDefaultAppearance();
 
-    var trans = [
-      1.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      1.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      1.0,
-      0.0,
-      this.tx,
-      this.ty,
-      this.tz,
-      1.0
-    ];
 
     var sca = [
       this.scaleFactor,
@@ -125,84 +90,14 @@ export class MyScene extends CGFscene {
       1.0,
     ];
 
+    this.multMatrix(sca);
+
 
     // ---- BEGIN Primitive drawing section
 
-    //blue triangle
-    if (this.displayTriangle){
-      this.pushMatrix();
-      this.scale(0.8,0.8,0.8),
-      this.rotate(Math.PI * (90) / 180, 0, 0, 1);
-      this.translate(-0.2,0.2,0);
-      this.triangle.display();
-      this.popMatrix();
-
-    } 
-
-    //pink triangle
-    if (this.displayTriangle){
-      this.pushMatrix();
-      this.scale(0.5,0.5,0.5),
-      //this.rotate(Math.PI * (90) / 180, 0, 0, 1);
-      this.translate(2.25,0.25,0);
-      this.triangle.display();
-      this.popMatrix();
-
-    } 
-
-    //purple triangle
-    if (this.displaySmallTriangle){
-      this.pushMatrix();
-      this.scale(0.5,0.5,0.5);
-      this.rotate(Math.PI * (-180) / 180, 0, 0, 1);
-      this.translate(-3,0.7,0);
-      this.smalltriangle.display();
-      this.popMatrix();
-
+    if(this.displayTangram){
+       this.tangram.display();
     }
-      
-    //if (this.displaySmallTriangle) this.smalltriangle.display();
-    //orange triangle
-    if (this.displaySmallTriangle){
-      this.pushMatrix();
-      this.rotate(Math.PI * (-90) / 180, 0, 0, 1);
-      this.translate(0,-1,0)
-      this.smalltriangle.display();
-      this.popMatrix();
-
-    }
-
-    //red triangle
-    if (this.displaySmallTriangle){
-      this.pushMatrix();
-      this.scale(0.5,0.5,0.5);
-      this.rotate(Math.PI * (90) / 180, 0, 0, 1);
-      this.translate(-1,2,0)
-      this.smalltriangle.display();
-      this.popMatrix();
-
-    }
-     
-
-    //green diamond
-    if (this.displayDiamond){
-      this.pushMatrix();
-      this.multMatrix(sca);
-      this.multMatrix(trans);
-      this.diamond.display();
-      this.popMatrix();
-    } 
-
-    //yellow parallelogram
-    if (this.displayParallelogram){
-      this.pushMatrix();
-      this.scale(0.5,0.5,0.5);
-      this.rotate(Math.PI * (-90) / 180, 0, 0, 1);
-      this.scale(1,-1,0);
-      this.translate(-2,2,0);
-      this.parallelogram.display();
-      this.popMatrix();
-    } 
 
     // ---- END Primitive drawing section
   }
