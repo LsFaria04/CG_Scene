@@ -138,6 +138,28 @@ export class MyScene extends CGFscene {
       this.popMatrix();
 
     } 
+
+    //pink triangle
+    if (this.displayTriangle){
+      this.pushMatrix();
+      this.scale(0.5,0.5,0.5),
+      //this.rotate(Math.PI * (90) / 180, 0, 0, 1);
+      this.translate(2.25,0.25,0);
+      this.triangle.display();
+      this.popMatrix();
+
+    } 
+
+    //purple triangle
+    if (this.displaySmallTriangle){
+      this.pushMatrix();
+      this.scale(0.5,0.5,0.5);
+      this.rotate(Math.PI * (-180) / 180, 0, 0, 1);
+      this.translate(-3,0.7,0);
+      this.smalltriangle.display();
+      this.popMatrix();
+
+    }
       
     //if (this.displaySmallTriangle) this.smalltriangle.display();
     //orange triangle
@@ -148,7 +170,19 @@ export class MyScene extends CGFscene {
       this.smalltriangle.display();
       this.popMatrix();
 
-    } 
+    }
+
+    //red triangle
+    if (this.displaySmallTriangle){
+      this.pushMatrix();
+      this.scale(0.5,0.5,0.5);
+      this.rotate(Math.PI * (90) / 180, 0, 0, 1);
+      this.translate(-1,2,0)
+      this.smalltriangle.display();
+      this.popMatrix();
+
+    }
+     
 
     //green diamond
     if (this.displayDiamond){
@@ -158,7 +192,17 @@ export class MyScene extends CGFscene {
       this.diamond.display();
       this.popMatrix();
     } 
-    //if (this.displayParallelogram) this.parallelogram.display();
+
+    //yellow parallelogram
+    if (this.displayParallelogram){
+      this.pushMatrix();
+      this.scale(0.5,0.5,0.5);
+      this.rotate(Math.PI * (-90) / 180, 0, 0, 1);
+      this.scale(1,-1,0);
+      this.translate(-2,2,0);
+      this.parallelogram.display();
+      this.popMatrix();
+    } 
 
     // ---- END Primitive drawing section
   }
