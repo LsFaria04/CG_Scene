@@ -96,13 +96,23 @@ export class MyScene extends CGFscene {
 
 
     // ---- BEGIN Primitive drawing section
+
+    //transformations to all the scene
+    this.translate(2,0,2);
+    this.rotate(Math.PI * (-90) / 180, 1, 0, 0);
+    
     
     if(this.displayTangram){
        this.tangram.display();
     }
 
-    
+    //transformations to the cube
+    this.pushMatrix();
+    this.translate(0,0,-0.5);
+    this.scale(4,4,0.5);
     this.unitCube.display();
+    this.popMatrix();
+
 
     // ---- END Primitive drawing section
   }
