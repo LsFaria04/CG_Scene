@@ -27,6 +27,13 @@ export class MyTangram extends CGFobject {
 
         this.scaleFactor = 0.5;
     }
+    enableNormalViz(){
+        this.triangle.enableNormalViz();
+        this.diamond.enableNormalViz();
+        this.parallelogram.enableNormalViz();
+        this.smalltriangle.enableNormalViz();
+        this.bigtriangle.enableNormalViz();
+    }
 
     display() {
         var trans = [
@@ -67,11 +74,7 @@ export class MyTangram extends CGFobject {
             1.0,
           ];
 
-        this.triangle.enableNormalViz();
-        this.diamond.enableNormalViz();
-        this.parallelogram.enableNormalViz();
-        this.smalltriangle.enableNormalViz();
-        this.bigtriangle.enableNormalViz();
+        
 
         //blue triangle
         this.scene.pushMatrix();
