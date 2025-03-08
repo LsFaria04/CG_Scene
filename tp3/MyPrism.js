@@ -18,23 +18,27 @@ export class MyPrism extends CGFobject {
         var alphaAng = 2*Math.PI/this.slices;
 
         for(var i = 0; i < this.slices; i++){
+            let lastAngle = ang - alphaAng;
+            let proxAngle = ang + alphaAng;
+            this.vertices.push(Math.cos(ang),Math.sin(ang), 0);
+            this.normals.push(Math.cos((ang + lastAngle) / 2  ),Math.sin((ang + lastAngle) / 2 ), 0);
 
             this.vertices.push(Math.cos(ang),Math.sin(ang), 0);
-            this.normals.push(Math.cos(ang), Math.cos(Math.PI/4.0),Math.sin(ang));
-
-            this.vertices.push(Math.cos(ang),Math.sin(ang), 0);
-            this.normals.push(Math.cos(ang), Math.cos(Math.PI/4.0),Math.sin(ang));
+            this.normals.push(Math.cos((ang + proxAngle) / 2  ),Math.sin((ang + proxAngle) / 2 ),0);
 
             ang+=alphaAng;
         }
 
+        ang = 0;
         for(var i = 0; i < this.slices; i++){
+            let lastAngle = ang - alphaAng;
+            let proxAngle = ang + alphaAng;
 
             this.vertices.push(Math.cos(ang),Math.sin(ang), -1);
-            this.normals.push(Math.cos(ang),Math.sin(ang), 0);
+            this.normals.push(Math.cos((ang + lastAngle) / 2  ),Math.sin((ang + lastAngle) / 2 ), 0);
 
             this.vertices.push(Math.cos(ang),Math.sin(ang), -1);
-            this.normals.push(Math.cos(ang),Math.sin(ang), 0);
+            this.normals.push(Math.cos((ang + proxAngle) / 2  ),Math.sin((ang + proxAngle) / 2 ),0);
             ang+=alphaAng;
         }
 
