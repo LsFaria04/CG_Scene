@@ -1,26 +1,19 @@
-import { CGFscene, CGFcamera, CGFaxis, CGFappearance } from "../lib/CGF.js";
-import { MyPyramid } from "./MyPyramid.js";
-import { MyCone } from "./MyCone.js";
-import { MyPlane } from "./MyPlane.js";
-import {MyTangram} from "./MyTangram.js"
-import { MyUnitCubeQuad } from "./MyUnitCubeQuad.js";
-import {MyUnitCube} from "./MyUnitCube.js";
-import { MyPrism } from "./MyPrism.js";
-import { MyCylinder } from "./MyCylinder.js";
+import { CGFscene, CGFcamera, CGFaxis, CGFappearance, CGFtexture } from "../lib/CGF.js";
+import { MyQuad } from "./MyQuad.js";
 
 /**
-* MyScene
-* @constructor
-*/
+ * MyScene
+ * @constructor
+ */
 export class MyScene extends CGFscene {
     constructor() {
         super();
     }
+
     init(application) {
         super.init(application);
         this.initCameras();
         this.initLights();
-        this.initMaterials();
 
         //Background color
         this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -29,142 +22,80 @@ export class MyScene extends CGFscene {
         this.gl.enable(this.gl.DEPTH_TEST);
         this.gl.enable(this.gl.CULL_FACE);
         this.gl.depthFunc(this.gl.LEQUAL);
+        this.enableTextures(true);
 
         //Initialize scene objects
         this.axis = new CGFaxis(this);
-        this.plane = new MyPlane(this, 5);
-        this.cone = new MyCone(this, 3, 1);
-        this.pyramid = new MyPyramid(this, 3, 1);
-        this.tangram = new MyTangram(this);
-        this.cube = new MyUnitCube(this);
-        this.prism = new MyPrism(this, 8, 20);
-        this.cylinder = new MyCylinder(this, 8, 20);
-        
-        this.objects = [this.plane, this.pyramid, this.cone, this.tangram, this.cube, this.prism, this.cylinder];
+        this.quad = new MyQuad(this);
 
-        // Labels and ID's for object selection on MyInterface
-        this.objectIDs = { 'Plane': 0 , 'Pyramid': 1, 'Cone': 2, 'Tangram' : 3, 'Cube': 4, 'Prism': 5, 'Cylinder' : 6};
+        //------ Applied Material
+        this.quadMaterial = new CGFappearance(this);
+        this.quadMaterial.setAmbient(0.1, 0.1, 0.1, 1);
+        this.quadMaterial.setDiffuse(0.9, 0.9, 0.9, 1);
+        this.quadMaterial.setSpecular(0.1, 0.1, 0.1, 1);
+        this.quadMaterial.setShininess(10.0);
+        this.quadMaterial.loadTexture('images/default.png');
+        this.quadMaterial.setTextureWrap('REPEAT', 'REPEAT');
+        //------
 
-        //Other variables connected to MyInterface
-        this.selectedObject = 0;
-        this.selectedMaterial = 0;
+        //------ Textures
+        this.texture1 = new CGFtexture(this, 'images/board.jpg');
+        this.texture2 = new CGFtexture(this, 'images/floor.png');
+        this.texture3 = new CGFtexture(this, 'images/window.jpg');
+        //-------
+
+        //-------Objects connected to MyInterface
         this.displayAxis = true;
-        this.displayNormals = false;
-        this.objectComplexity = 0.5;
-        this.scaleFactor = 2.0;
+        this.scaleFactor = 5;
+        this.selectedTexture = -1;        
+        this.wrapS = 0;
+        this.wrapT = 0;
 
-        this.ambientLight = 0.3;
+        this.textures = [this.texture1, this.texture2, this.texture3];
+        this.texCoords = [0.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0];
+        this.wrappingMethods = ['REPEAT', 'CLAMP_TO_EDGE', 'MIRRORED_REPEAT'];
 
-    }
+        this.textureIds = { 'Board': 0, 'Floor': 1, 'Window': 2 };
+        this.wrappingS = { 'Repeat': 0, 'Clamp to edge': 1, 'Mirrored repeat': 2 };
+        this.wrappingT = { 'Repeat': 0, 'Clamp to edge': 1, 'Mirrored repeat': 2 };
+
+      }
+
     initLights() {
-        this.setGlobalAmbientLight(0.3, 0.3, 0.3, 1.0);
-
-        this.lights[0].setPosition(2.0, 2.0, -1.0, 1.0);
+        this.lights[0].setPosition(5, 2, 5, 1);
         this.lights[0].setDiffuse(1.0, 1.0, 1.0, 1.0);
-        this.lights[0].setSpecular(1.0, 1.0, 1.0, 1.0);
-        this.lights[0].disable();
-        this.lights[0].setVisible(true);
+        this.lights[0].enable();
         this.lights[0].update();
-
-        this.lights[1].setPosition(0.0, -1.0, 2.0, 1.0);
-        this.lights[1].setDiffuse(1.0, 1.0, 1.0, 1.0);
-        this.lights[1].setSpecular(1.0, 1.0, 0.0, 1.0);
-        this.lights[1].disable();
-        this.lights[1].setVisible(true);
-        this.lights[1].update();
     }
+
     initCameras() {
-        this.camera = new CGFcamera(0.4, 0.1, 500, vec3.fromValues(10, 10, 10), vec3.fromValues(0, 0, 0));
+        this.camera = new CGFcamera(0.4, 0.1, 500, vec3.fromValues(15, 15, 15), vec3.fromValues(0, 0, 0));
     }
 
-    updateAmbientLight(){
-        this.setGlobalAmbientLight(this.ambientLight, this.ambientLight, this.ambientLight, 1.0)
+    setDefaultAppearance() {
+        this.setAmbient(0.2, 0.4, 0.8, 1.0);
+        this.setDiffuse(0.2, 0.4, 0.8, 1.0);
+        this.setSpecular(0.2, 0.4, 0.8, 1.0);
+        this.setShininess(10.0);
     }
 
-    hexToRgbA(hex)
-    {
-        var ret;
-        //either we receive a html/css color or a RGB vector
-        if(/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)){
-            ret=[
-                parseInt(hex.substring(1,3),16).toPrecision()/255.0,
-                parseInt(hex.substring(3,5),16).toPrecision()/255.0,
-                parseInt(hex.substring(5,7),16).toPrecision()/255.0,
-                1.0
-            ];
-        }
-        else
-            ret=[
-                hex[0].toPrecision()/255.0,
-                hex[1].toPrecision()/255.0,
-                hex[2].toPrecision()/255.0,
-                1.0
-            ];
-        return ret;
+    //Function that resets selected texture in quadMaterial
+    updateAppliedTexture() {
+        this.quadMaterial.setTexture(this.textures[this.selectedTexture]);
     }
 
-    updateCustomMaterial() {
-        this.customMaterial.setAmbient(...this.hexToRgbA(this.customMaterialValues['Ambient']));
-        this.customMaterial.setDiffuse(...this.hexToRgbA(this.customMaterialValues['Diffuse']));
-        this.customMaterial.setSpecular(...this.hexToRgbA(this.customMaterialValues['Specular']));
-
-        this.customMaterial.setShininess(this.customMaterialValues['Shininess']);
-
-    };
-
-    updateObjectComplexity(){
-        this.objects[this.selectedObject].updateBuffers(this.objectComplexity);
+    //Function that updates wrapping mode in quadMaterial
+    updateTextureWrapping() {
+        this.quadMaterial.setTextureWrap(this.wrappingMethods[this.wrapS], this.wrappingMethods[this.wrapT]);
     }
 
-
-    initMaterials() {
-        // Red Ambient (no diffuse, no specular)
-        this.material1 = new CGFappearance(this);
-        this.material1.setAmbient(1, 0, 0, 1.0);
-        this.material1.setDiffuse(0, 0, 0, 1.0);
-        this.material1.setSpecular(0, 0, 0, 1.0);
-        this.material1.setShininess(10.0);
-
-        // Red Diffuse (no ambient, no specular)
-        this.material2 = new CGFappearance(this);
-        this.material2.setAmbient(0.0, 0.0, 0.0, 1.0);
-        this.material2.setDiffuse(1, 0, 0, 1.0);
-        this.material2.setSpecular(0, 0, 0, 1.0);
-        this.material2.setShininess(10.0);
-
-        // Red Specular (no ambient, no diffuse)
-        this.material3 = new CGFappearance(this);
-        this.material3.setAmbient(0, 0, 0, 1.0);
-        this.material3.setDiffuse(0, 0, 0, 1.0);
-        this.material3.setSpecular(1, 0, 0, 1.0);
-        this.material3.setShininess(10.0);
-
-        //Wood
-        this.material4 = new CGFappearance(this);
-        this.material4.setAmbient(0.44, 0.33, 0.23, 1.0);
-        this.material4.setDiffuse(0.44, 0.33, 0.23, 1.0);
-        this.material4.setSpecular(0.44, 0.33, 0.23, 0.1);
-        this.material4.setShininess(10.0);
-
-        // Custom material (can be changed in the interface)
-        // initially midrange values on ambient, diffuse and specular, on R, G and B respectively
-
-        this.customMaterialValues = {
-            'Ambient': '#0000ff',
-            'Diffuse': '#ff0000',
-            'Specular': '#000000',
-            'Shininess': 10
-        }
-        this.customMaterial = new CGFappearance(this);
-
-        this.updateCustomMaterial();
-
-        this.materials = [this.material1, this.material2, this.material3, this.material4, this.customMaterial];
-
-        // Labels and ID's for object selection on MyInterface
-        this.materialIDs = {'Red Ambient': 0, 'Red Diffuse': 1, 'Red Specular': 2, 'Wood': 3, 'Custom': 4 };
+    //Function that updates texture coordinates in MyQuad
+    updateTexCoords() {
+        this.quad.updateTexCoords(this.texCoords);
     }
+
     display() {
+  
         // ---- BEGIN Background, camera and axis setup
         // Clear image and depth buffer everytime we update the scene
         this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
@@ -174,32 +105,27 @@ export class MyScene extends CGFscene {
         this.loadIdentity();
         // Apply transformations corresponding to the camera position relative to the origin
         this.applyViewMatrix();
-        
-        this.lights[0].update();
-        this.lights[1].update();
 
         // Draw axis
         if (this.displayAxis)
             this.axis.display();
 
+        this.setDefaultAppearance();
+
+        this.scale(this.scaleFactor, this.scaleFactor, this.scaleFactor);
+
         // ---- BEGIN Primitive drawing section
 
-        this.materials[this.selectedMaterial].apply();
+        this.quadMaterial.apply();
 
-        this.pushMatrix();
-        this.scale(this.scaleFactor,this.scaleFactor,this.scaleFactor);
+        // Default texture filtering in WebCGF is LINEAR. 
+        // Uncomment next line for NEAREST when magnifying, or 
+        // add a checkbox in the GUI to alternate in real time
         
-        if (this.displayNormals)
-            this.objects[this.selectedObject].enableNormalViz();
-        else
-            this.objects[this.selectedObject].disableNormalViz();
-        
-        
-        this.rotate(Math.PI * (90) / 180, 1, 0, 0);
-        this.scale(1,1,0.05);
-        this.objects[this.selectedObject].display();
-        
-        this.popMatrix();
+        // this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.NEAREST);
+
+        this.quad.display();
+
         // ---- END Primitive drawing section
     }
 }

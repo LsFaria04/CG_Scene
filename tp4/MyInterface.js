@@ -12,55 +12,36 @@ export class MyInterface extends CGFinterface {
     init(application) {
         // call CGFinterface init
         super.init(application);
-       
+        
         // init GUI. For more information on the methods, check:
         // https://github.com/dataarts/dat.gui/blob/master/API.md
         this.gui = new dat.GUI();
-
-        this.gui.add(this.scene, 'displayAxis').name("Display axis");
-        this.gui.add(this.scene, 'displayNormals').name("Display normals");
-
-        // example of a dropdown that has numeric ID's associated, 
-        // and an event handler to be called when the selection changes
-        this.gui.add(this.scene, 'selectedObject', this.scene.objectIDs).name('Selected Object').onChange(this.scene.updateObjectComplexity.bind(this.scene));
-
-        this.gui.add(this.scene, 'scaleFactor', 0.1, 10.0).name('Scale');
-        this.gui.add(this.scene, 'objectComplexity', 0.01, 1.0).onChange(this.scene.updateObjectComplexity.bind(this.scene));
-
-        this.gui.add(this.scene, 'selectedMaterial', this.scene.materialIDs).name('Selected Material');
-
-        this.gui.add(this.scene, 'ambientLight', 0.1, 1).onChange(this.scene.updateAmbientLight.bind(this.scene));
-        // a folder for grouping parameters for one of the lights
-        var f0 = this.gui.addFolder('Light 0 ');
-        f0.add(this.scene.lights[0], 'enabled').name("Enabled");
-        // a subfolder for grouping only the three coordinates of the light
-        var sf0 = f0.addFolder('Light 0 Position');
-        sf0.add(this.scene.lights[0].position, '0', -5.0, 5.0).name("X Position");
-        sf0.add(this.scene.lights[0].position, '1', -5.0, 5.0).name("Y Position");
-        sf0.add(this.scene.lights[0].position, '2', -5.0, 5.0).name("Z Position");
-    
-        // similar but for light 1
-        var f1 = this.gui.addFolder('Light 1 ');
-        f1.add(this.scene.lights[1], 'enabled').name("Enabled");
-        var sf1 = f1.addFolder('Light 1 Position');
-        sf1.add(this.scene.lights[1].position, '0', -5.0, 5.0).name("X Position");
-        sf1.add(this.scene.lights[1].position, '1', -5.0, 5.0).name("Y Position");
-        sf1.add(this.scene.lights[1].position, '2', -5.0, 5.0).name("Z Position");
-        var sf2 = f1.addFolder('Light 1 Attenuation');
-        sf2.add(this.scene.lights[1], 'constant_attenuation', 0.00, 1.00).name("Const. Atten.");
-        sf2.add(this.scene.lights[1], 'linear_attenuation', 0.0, 1.0).name("Linear Atten.");
-        sf2.add(this.scene.lights[1], 'quadratic_attenuation', 0.0, 1.0).name("Quad. Atten.");
-    
-        // Anothe forlder for grouping the custom material's parameters
-        var f2 = this.gui.addFolder('Custom Material');
         
-        f2.addColor(this.scene.customMaterialValues,'Ambient').onChange(this.scene.updateCustomMaterial.bind(this.scene));
-        f2.addColor(this.scene.customMaterialValues,'Diffuse').onChange(this.scene.updateCustomMaterial.bind(this.scene));
-        f2.addColor(this.scene.customMaterialValues,'Specular').onChange(this.scene.updateCustomMaterial.bind(this.scene));
-        f2.add(this.scene.customMaterialValues,'Shininess', 0, 100).onChange(this.scene.updateCustomMaterial.bind(this.scene));
+        var obj = this;
+
+        //Checkbox element in GUI
+        this.gui.add(this.scene, 'displayAxis').name('Display Axis');
+
+        //Dropdown for textures
+        this.gui.add(this.scene, 'selectedTexture', this.scene.textureIds).name('Selected Texture').onChange(this.scene.updateAppliedTexture.bind(this.scene));
+        //Dropdown for wrapping (S)
+        this.gui.add(this.scene, 'wrapS', this.scene.wrappingS).name('Wrap S').onChange(this.scene.updateTextureWrapping.bind(this.scene));
+        this.gui.add(this.scene, 'wrapT', this.scene.wrappingT).name('Wrap T').onChange(this.scene.updateTextureWrapping.bind(this.scene));
+
+        //Groups for Texture coordinates per vertex (MyQuad)
+        var f0 = this.gui.addFolder('Top Left Coords')
+        f0.add(this.scene.texCoords, '4', -5.0, 5.0, 0.1).name('S Coord').onChange(this.scene.updateTexCoords.bind(this.scene)).step(0.001);
+        f0.add(this.scene.texCoords, '5', -5.0, 5.0, 0.1).name('T Coord').onChange(this.scene.updateTexCoords.bind(this.scene)).step(0.001);
+        var f1 = this.gui.addFolder('Top Right Coords')
+        f1.add(this.scene.texCoords, '6', -5.0, 5.0, 0.1).name('S Coord').onChange(this.scene.updateTexCoords.bind(this.scene)).step(0.001);
+        f1.add(this.scene.texCoords, '7', -5.0, 5.0, 0.1).name('T Coord').onChange(this.scene.updateTexCoords.bind(this.scene)).step(0.001);
+        var f2 = this.gui.addFolder('Bottom Left Coords')
+        f2.add(this.scene.texCoords, '0', -5.0, 5.0, 0.1).name('S Coord').onChange(this.scene.updateTexCoords.bind(this.scene)).step(0.001);
+        f2.add(this.scene.texCoords, '1', -5.0, 5.0, 0.1).name('T Coord').onChange(this.scene.updateTexCoords.bind(this.scene)).step(0.001);
+        var f3 = this.gui.addFolder('Bottom Right Coords')
+        f3.add(this.scene.texCoords, '2', -5.0, 5.0, 0.1).name('S Coord').onChange(this.scene.updateTexCoords.bind(this.scene)).step(0.001);
+        f3.add(this.scene.texCoords, '3', -5.0, 5.0, 0.1).name('T Coord').onChange(this.scene.updateTexCoords.bind(this.scene)).step(0.001);
 
         return true;
     }
-
-
 }
