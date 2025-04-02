@@ -37,7 +37,7 @@ export class MyTangram extends CGFobject {
         this.bigtriangle.enableNormalViz();
     }
 
-     initMaterials(scene) {
+    initMaterials(scene) {
             this.tangramMat = new CGFappearance(scene);
             this.tangramMat.loadTexture('images/tangram.png');
             this.tangramMat.setAmbient(1, 1, 1, 1);
