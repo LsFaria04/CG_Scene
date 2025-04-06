@@ -1,4 +1,5 @@
-import { CGFscene, CGFcamera, CGFaxis, CGFappearance } from "../lib/CGF.js";
+import { CGFscene, CGFcamera, CGFaxis, CGFappearance, CGFtexture } from "../lib/CGF.js";
+import { MyPanorama } from "./MyPanorama.js";
 import { MyPlane } from "./MyPlane.js";
 import { MySphere } from "./MySphere.js";
 
@@ -28,17 +29,24 @@ export class MyScene extends CGFscene {
 
     this.setUpdatePeriod(50);
 
+    //textures
+    this.panoramaTexture = new CGFtexture(this, 'textures/panorama2.jpg');
+    this.grassTexture = new CGFtexture(this, 'textures/grass.jpg');
+
     //Initialize scene objects
     this.axis = new CGFaxis(this, 20, 1);
     this.plane = new MyPlane(this, 64);
-    this.sphere = new MySphere(this, 100, 100);
+    this.sphere = new MySphere(this, 100, 100, true);
+    this.panorama = new MyPanorama(this, this.panoramaTexture, [10,0,10]);
 
     this.material = new CGFappearance(this);
     this.material.setAmbient(1, 1, 1, 1);
     this.material.setDiffuse(1, 1, 1, 1);
     this.material.setSpecular(1, 1, 1, 1);
     this.material.setShininess(10.0);
-    this.material.loadTexture('textures/earth.jpg');
+    this.material.setTexture(this.grassTexture);
+    this.material.setTextureWrap('REPEAT', 'REPEAT');
+
   }
   initLights() {
     this.lights[0].setPosition(200, 200, 200, 1);
@@ -48,10 +56,10 @@ export class MyScene extends CGFscene {
   }
   initCameras() {
     this.camera = new CGFcamera(
-      0.4,
+      0.7,
       0.1,
       1000,
-      vec3.fromValues(200, 200, 200),
+      vec3.fromValues(10, 5, 10),
       vec3.fromValues(0, 0, 0)
     );
   }
@@ -99,10 +107,15 @@ export class MyScene extends CGFscene {
 
     this.setDefaultAppearance();
 
-    this.scale(100, 100, 100);
-    //this.rotate(-Math.PI / 2, 1, 0, 0);
-    //this.plane.display();
+    this.panorama.setPosition(this.camera.position);
+    this.panorama.display(); 
+    this.pushMatrix();
+    this.scale(400,1, 400);
     this.material.apply();
-    this.sphere.display();
+    this.rotate(-Math.PI / 2, 1, 0, 0);
+    this.plane.display();
+    this.popMatrix();
+    
+    
   }
 }
