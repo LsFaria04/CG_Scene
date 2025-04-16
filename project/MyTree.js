@@ -3,7 +3,7 @@ import { MyCylinder } from './MyCylinder.js';
 import { MyPyramid } from './MyPyramid.js';
 
 export class MyTree extends CGFobject {
-    constructor(scene, inclination, axis, radius, height, color)
+    constructor(scene, inclination, axis, radius, height, color, treeTexture, leavesTexture)
     {
         super(scene);
         this.scene;
@@ -15,6 +15,8 @@ export class MyTree extends CGFobject {
         this.cylinder = new MyCylinder(scene, 100, 10);
         this.pyramid = new MyPyramid(scene, 8, 5);
         this.treeColor = color;
+        this.treeTexture = treeTexture;
+        this.leavesTexture = leavesTexture;
         this.initBuffers();
     }
 
@@ -24,12 +26,14 @@ export class MyTree extends CGFobject {
         this.material.setDiffuse(0.29,0.15,0.00, 1.0);
         this.material.setSpecular(0.29,0.15,0.00, 0.1);
         this.material.setShininess(1.0);
+        this.material.setTexture(this.treeTexture);
 
         this.material2 = new CGFappearance(this.scene);
         this.material2.setAmbient(this.color[0], this.color[1], this.color[2], 1.0);
         this.material2.setDiffuse(this.color[0], this.color[1], this.color[2], 1.0);
         this.material2.setSpecular(this.color[0], this.color[1], this.color[2], 0.1);
         this.material2.setShininess(1.0);
+        this.material2.setTexture(this.leavesTexture);
     }
     
     display() {

@@ -75,14 +75,6 @@ export class MyCylinder extends CGFobject {
         }
         //down face last slice
         this.indices.push(this.slices * 2 + 1 + ((this.stacks - 1) * this.slices * 2 * 2), this.slices * 2 * 2 - 1 + ((this.stacks - 1) * this.slices * 2 * 2), lastIDX);
-
-
-        console.log(this.indices)
-        console.log(this.vertices)
-
-
-        //this.vertices.push(0,0,0);
-        //this.normals.push(0,1,0);
         
         //The defined indices (and corresponding vertices)
         //will be read in groups of three to draw triangles

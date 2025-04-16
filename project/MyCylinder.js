@@ -13,18 +13,22 @@ export class MyCylinder extends CGFobject {
         this.vertices = [];
         this.indices = [];
         this.normals = [];
+        this.texCoords = [];
 
         for(var stack = 1; stack < this.stacks + 1; stack++){
             var ang = 0;
-            var alphaAng = 2*Math.PI/this.slices;
+            var alphaAng = 360/this.slices;
 
             for(var i = 0; i < this.slices; i++){
 
-                this.vertices.push(Math.cos(ang),Math.sin(ang),  -stack + 1);
-                this.normals.push(Math.cos(ang),Math.sin((ang)), 0);
+                this.vertices.push(Math.cos(ang* Math.PI / 180),Math.sin(ang* Math.PI / 180),  -stack + 1);
+                this.normals.push(Math.cos(ang* Math.PI / 180),Math.sin((ang* Math.PI / 180)), 0);
 
-                this.vertices.push(Math.cos(ang),Math.sin(ang),  -stack + 1);
-                this.normals.push(Math.cos(ang),Math.sin(ang),0);
+                this.vertices.push(Math.cos(ang* Math.PI / 180),Math.sin(ang* Math.PI / 180),  -stack + 1);
+                this.normals.push(Math.cos(ang* Math.PI / 180),Math.sin(ang* Math.PI / 180),0);
+
+                this.texCoords.push(ang/360, stack/this.stacks);
+                this.texCoords.push(ang/360, stack/this.stacks);
 
                 ang+=alphaAng;
             }
@@ -33,11 +37,15 @@ export class MyCylinder extends CGFobject {
             for(var i = 0; i < this.slices; i++){
 
 
-                this.vertices.push(Math.cos(ang),Math.sin(ang),  -stack);
-                this.normals.push(Math.cos(ang),Math.sin(ang), 0);
+                this.vertices.push(Math.cos(ang* Math.PI / 180),Math.sin(ang* Math.PI / 180),  -stack);
+                this.normals.push(Math.cos(ang* Math.PI / 180),Math.sin(ang* Math.PI / 180), 0);
 
-                this.vertices.push(Math.cos(ang),Math.sin(ang),  -stack);
-                this.normals.push(Math.cos(ang),Math.sin(ang),0);
+                this.vertices.push(Math.cos(ang* Math.PI / 180),Math.sin(ang* Math.PI / 180),  -stack);
+                this.normals.push(Math.cos(ang* Math.PI / 180),Math.sin(ang* Math.PI / 180),0);
+
+                this.texCoords.push(ang/360, stack/this.stacks);
+                this.texCoords.push(ang/360, stack/this.stacks);
+
                 ang+=alphaAng;
             }
 

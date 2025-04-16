@@ -17,6 +17,7 @@ export class MyPyramid extends CGFobject {
         this.vertices = [];
         this.indices = [];
         this.normals = [];
+        this.texCoords = [];
 
         var ang = 0;
         var alphaAng = 2*Math.PI/this.slices;
@@ -34,6 +35,10 @@ export class MyPyramid extends CGFobject {
             this.vertices.push(0,1,0);
             this.vertices.push(ca, 0, -sa);
             this.vertices.push(caa, 0, -saa);
+
+            this.texCoords.push(0.5, 0);
+            this.texCoords.push(ang / (2*Math.PI),1);
+            this.texCoords.push((ang + alphaAng)/ (2*Math.PI),1);
 
             // triangle normal computed by cross product of two edges
             var normal= [
@@ -70,6 +75,7 @@ export class MyPyramid extends CGFobject {
 
         this.primitiveType = this.scene.gl.TRIANGLES;
         this.initGLBuffers();
+
     }
     /**
      * Called when user interacts with GUI to change object's complexity.

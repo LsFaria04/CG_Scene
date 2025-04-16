@@ -3,14 +3,16 @@ import { MyTree } from './MyTree.js';
 import {getRandomInt} from './utils.js'
 
 export class MyForest extends CGFobject {
-    constructor(scene, width, height, centerposition, areaLen)
+    constructor(scene, width, height, centerposition, treeOffset, treeTexture, leavesTexture)
     {
         super(scene);
         this.scene = scene;
         this.width = width;
         this.height = height;
         this.centerposition = centerposition;
-        this.areaLen = areaLen;
+        this.treeOffset = treeOffset;
+        this.treeTexture = treeTexture;
+        this.leavesTexture = leavesTexture;
         this.init();
     }
 
@@ -39,7 +41,7 @@ export class MyForest extends CGFobject {
                         break;
                 }
                 
-                let tree = new MyTree(this.scene, inclination, axis, radius, height, color);
+                let tree = new MyTree(this.scene, inclination, axis, radius, height, color, this.treeTexture, this.leavesTexture);
                 this.trees.push(tree);
                 
                 let x = getRandomInt(-4,4);
@@ -49,7 +51,7 @@ export class MyForest extends CGFobject {
         }
 
        console.log(this.positions)
-
+        
     }
 
     display(){
@@ -59,7 +61,7 @@ export class MyForest extends CGFobject {
                 let offsetx = j - (this.height/2);
 
                 this.scene.pushMatrix();
-                this.scene.translate(offsetx * 5 +  this.positions[i*this.width + j ][0], this.positions[i*this.width + j ][1], offsetz * 5 + this.positions[i*this.width + j ][2]);  //translate to the expected position
+                this.scene.translate(offsetx * this.treeOffset +  this.positions[i*this.width + j ][0], this.positions[i*this.width + j ][1], offsetz * this.treeOffset + this.positions[i*this.width + j ][2]);  //translate to the expected position
                 this.scene.translate(this.centerposition[0], this.centerposition[1], this.centerposition[2]); //translate to the center of the forest (reference point)
                 this.trees[i*this.width + j ].display();
                 this.scene.popMatrix();
