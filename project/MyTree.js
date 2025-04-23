@@ -60,7 +60,6 @@ export class MyTree extends CGFobject {
 
         const numbPyramids = Math.round(this.height * 0.8);
         if(numbPyramids == 0) numbPyramids = 1;
-        this.material2.apply();
         const radiusScaleStep = 1.5 / numbPyramids;
         let radiusScale = 2;
         for(let i = 0; i < numbPyramids; i++){
@@ -74,10 +73,13 @@ export class MyTree extends CGFobject {
             }
             this.scene.translate(0,this.height * 0.2 + i*0.8,0);
             this.scene.scale(this.radius * radiusScale, 1.2, this.radius * radiusScale);
-            this.pyramid.display();
+            this.material2.apply();
+            this.pyramid.display();            
             this.scene.popMatrix();
             radiusScale -= radiusScaleStep;
         }
+
+        
         
     }
 }

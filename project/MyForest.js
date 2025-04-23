@@ -50,7 +50,6 @@ export class MyForest extends CGFobject {
             }
         }
 
-       console.log(this.positions)
         
     }
 

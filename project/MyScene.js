@@ -1,9 +1,9 @@
 import { CGFscene, CGFcamera, CGFaxis, CGFappearance, CGFtexture } from "../lib/CGF.js";
 import { MyForest } from "./MyForest.js";
+import { MyHeli } from "./MyHeli.js";
 import { MyPanorama } from "./MyPanorama.js";
 import { MyPlane } from "./MyPlane.js";
 import { MySphere } from "./MySphere.js";
-import { MyTree } from "./MyTree.js";
 
 /**
  * MyScene
@@ -42,7 +42,8 @@ export class MyScene extends CGFscene {
     this.plane = new MyPlane(this, 64);
     this.sphere = new MySphere(this, 100, 100, true);
     this.panorama = new MyPanorama(this, this.panoramaTexture, [10,0,10]);
-    this.forest = new MyForest(this, 10, 10, [0,0,0], 8, this.treeTexture, this.leavesTexture);
+    this.forest = new MyForest(this, 5, 5, [-20,0,0], 8, this.treeTexture, this.leavesTexture);
+    this.heli = new MyHeli(this);
 
     this.material = new CGFappearance(this);
     this.material.setAmbient(1, 1, 1, 1);
@@ -121,7 +122,13 @@ export class MyScene extends CGFscene {
     this.rotate(-Math.PI / 2, 1, 0, 0);
     this.plane.display();
     this.popMatrix();
+    
     this.forest.display();
+
+    this.pushMatrix();
+    this.translate(5,10,0);
+    this.heli.display();
+    this.popMatrix();
     
     
   }
