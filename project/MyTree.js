@@ -1,4 +1,5 @@
 import {CGFappearance, CGFobject} from '../lib/CGF.js';
+import { MyCone } from './MyCone.js';
 import { MyCylinder } from './MyCylinder.js';
 import { MyPyramid } from './MyPyramid.js';
 
@@ -12,8 +13,8 @@ export class MyTree extends CGFobject {
         this.radius = radius;
         this.height = height;
         this.color = color;
-        this.cylinder = new MyCylinder(scene, 100, 10);
-        this.pyramid = new MyPyramid(scene, 8, 5);
+        this.cone = new MyCone(scene, 90, 10,this.height * 0.2, inclination, axis === 'x' ? true : false);
+        this.pyramid = new MyPyramid(scene, 8, 5,1,inclination, axis === 'x' ? true : false);
         this.treeColor = color;
         this.treeTexture = treeTexture;
         this.leavesTexture = leavesTexture;
@@ -41,42 +42,30 @@ export class MyTree extends CGFobject {
         
         
         this.scene.pushMatrix();
-        //rotate in the specified axis
-        if(this.axis === 'x'){
-            this.scene.rotate(this.inclination * Math.PI / 180,1,0,0);
-        }
-        else if(this.axis === 'z' ){
-            this.scene.rotate(this.inclination * Math.PI / 180,0,0,1);
-        }
         //scale to the disered height and radius
-        this.scene.scale(this.radius, this.height * 0.2, this.radius);
-        //Scale to unit size (1 of height)
-        this.scene.scale(1,0.1,1);
-        //rotate to vertical position
-        this.scene.rotate(90 * Math.PI / 180,1,0,0);
+        this.scene.scale(this.radius, 1, this.radius);
         this.material.apply();
-        this.cylinder.display();
+        this.cone.display();
         this.scene.popMatrix();
 
         const numbPyramids = Math.round(this.height * 0.8);
         if(numbPyramids == 0) numbPyramids = 1;
         const radiusScaleStep = 1.5 / numbPyramids;
-        let radiusScale = 2;
+        let radiusScale = 2.5;
+        let translateDist = Math.sin(this.inclination * Math.PI / 180);
         for(let i = 0; i < numbPyramids; i++){
             this.scene.pushMatrix();
-                //rotate in the specified axis
-            if(this.axis === 'x'){
-                this.scene.rotate(this.inclination * Math.PI / 180,1,0,0);
-            }
-            else if(this.axis === 'z' ){
-                this.scene.rotate(this.inclination * Math.PI / 180,0,0,1);
-            }
-            this.scene.translate(0,this.height * 0.2 + i*0.8,0);
-            this.scene.scale(this.radius * radiusScale, 1.2, this.radius * radiusScale);
+            if(this.axis === 'x')
+                this.scene.translate(translateDist  ,this.height * 0.1 + i*0.8,0);
+            else if(this.axis === 'z')
+                this.scene.translate(0,this.height * 0.1 + i*0.8,translateDist);
+            this.scene.scale(this.radius * radiusScale, 1, this.radius * radiusScale);
             this.material2.apply();
-            this.pyramid.display();            
+            this.pyramid.display();
             this.scene.popMatrix();
             radiusScale -= radiusScaleStep;
+
+            translateDist += Math.sin(this.inclination * Math.PI / 180) * this.radius * radiusScale;
         }
 
         

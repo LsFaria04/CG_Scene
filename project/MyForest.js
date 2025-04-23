@@ -21,10 +21,10 @@ export class MyForest extends CGFobject {
         this.positions = []; //array with the position of the trees (relative to the center position)
         for(let i = 0; i < this.width; i++){
             for(let j = 0; j < this.height; j++){
-                let inclination = getRandomInt(0, 20);
+                let inclination = getRandomInt(-10, 10);
                 let axis = getRandomInt(1,2) === 1 ? 'x' : 'z';
-                let radius = getRandomInt(1,2);
-                let height = getRandomInt(4,20);
+                let radius = getRandomInt(2,4)/4;
+                let height = getRandomInt(4,15);
                 let color_select = getRandomInt(1,3);
                 let color = [0.05,0.42,0.01];
                 switch(color_select){
@@ -49,7 +49,6 @@ export class MyForest extends CGFobject {
                 this.positions.push([x,0,z]);
             }
         }
-
         
     }
 

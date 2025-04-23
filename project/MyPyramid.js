@@ -7,10 +7,13 @@ import {CGFobject} from '../lib/CGF.js';
  * @param stacks - number of divisions along the Y axis
 */
 export class MyPyramid extends CGFobject {
-    constructor(scene, slices, stacks) {
+    constructor(scene, slices, stacks,height, inclination, isX ) {
         super(scene);
         this.slices = slices;
         this.stacks = stacks;
+        this.height = height;
+        this.inclination = inclination;
+        this.isX = isX;
         this.initBuffers();
     }
     initBuffers() {
@@ -32,7 +35,15 @@ export class MyPyramid extends CGFobject {
             var ca=Math.cos(ang);
             var caa=Math.cos(ang+alphaAng);
 
-            this.vertices.push(0,1,0);
+            if(this.isX){
+                this.vertices.push(Math.sin(this.inclination * Math.PI / 180) * this.height,this.height,0);
+                this.normals.push(Math.sin(this.inclination * Math.PI / 180),1,0);
+            }
+            else{
+                this.vertices.push(0,this.height,Math.sin(this.inclination * Math.PI / 180) * this.height);
+                this.normals.push(0,1,(Math.sin(this.inclination * Math.PI / 180)));
+            }
+
             this.vertices.push(ca, 0, -sa);
             this.vertices.push(caa, 0, -saa);
 
