@@ -39,7 +39,7 @@ export class MyScene extends CGFscene {
 
     //Initialize scene objects
     this.axis = new CGFaxis(this, 20, 1);
-    this.plane = new MyPlane(this, 64);
+    this.plane = new MyPlane(this, 64, 0, 64, 0, 64);
     this.sphere = new MySphere(this, 100, 100, true);
     this.panorama = new MyPanorama(this, this.panoramaTexture, [10,0,10]);
     this.forest = new MyForest(this, 5, 5, [-20,0,0], 8, this.treeTexture, this.leavesTexture);
@@ -126,7 +126,7 @@ export class MyScene extends CGFscene {
     this.forest.display();
 
     this.pushMatrix();
-    this.translate(5,10,0);
+    this.translate(5,20,0);
     this.heli.display();
     this.popMatrix();
     

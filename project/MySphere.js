@@ -8,6 +8,7 @@ export class MySphere extends CGFobject {
         this.slices = slices;
         this.stacks = stacks;
         this.isInverted = isInverted;
+
         this.initBuffers();
     }
     

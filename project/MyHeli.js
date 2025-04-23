@@ -1,8 +1,10 @@
-import {CGFobject} from '../lib/CGF.js';
+import {CGFobject, CGFappearance} from '../lib/CGF.js';
+import { MyUnitCubeQuad } from '../tp2/MyUnitCubeQuad.js';
 import { MyCylinder } from './MyCylinder.js';
+import { MyHelice } from './MyHelice.js';
+import { MyLandingGear } from './MyLandingGear.js';
 import { MyPyramid } from './MyPyramid.js';
 import { MySphere } from './MySphere.js';
-import { MyUnitCube } from './MyUnitCube.js';
 
 export class MyHeli extends CGFobject {
     constructor(scene)
@@ -14,16 +16,41 @@ export class MyHeli extends CGFobject {
 
     init(){
         this.sphere = new MySphere(this.scene, 80, 80, false);
-        this.cube = new MyUnitCube(this.scene);
+        this.cube = new MyUnitCubeQuad(this.scene);
         this.cylinder = new MyCylinder(this.scene, 90, 1); 
         this.pyramid = new MyPyramid(this.scene, 4, 1);
+        this.helice = new MyHelice(this.scene);
+        this.landingGear = new MyLandingGear(this.scene);
+
+        //the fuselage will be red (fire figthing helicopter)
+        this.fuselage = new CGFappearance(this.scene);
+        this.fuselage.setAmbient(0.651, 0.1725, 0.1686, 0.1);
+        this.fuselage.setDiffuse(0.651, 0.1725, 0.1686, 0.1);
+        this.fuselage.setSpecular(0.651, 0.1725, 0.1686, 1);
+        this.fuselage.setShininess(1.0);
+        this.fuselage.loadTexture('textures/helicopter_fuselage.png');
+
+        this.silverFuselage = new CGFappearance(this.scene);
+        this.silverFuselage.setAmbient(1, 1, 1, 0.0);
+        this.silverFuselage.setDiffuse(1, 1, 1, 0.0);
+        this.silverFuselage.setSpecular(1, 1, 1, 1.0);
+        this.silverFuselage.setShininess(1.0);
+        this.silverFuselage.loadTexture('textures/helicopter_fuselage.png');
+
+        this.silver = new CGFappearance(this.scene);
+        this.silver.setAmbient(0.6627, 0.6227, 0.6784, 0.0);
+        this.silver.setDiffuse(0.6627, 0.6227, 0.6784, 0.0);
+        this.silver.setSpecular(0.6627, 0.6227, 0.6784, 1.0);
+        this.silver.setShininess(1.0);
     }
 
     display(){
 
+
         //cockpit
         this.scene.pushMatrix();
         this.scene.scale(5,2.5,2.5);
+        this.fuselage.apply();
         this.sphere.display();
         this.scene.popMatrix();
 
@@ -45,120 +72,49 @@ export class MyHeli extends CGFobject {
 
         //rear wing
         this.scene.pushMatrix();
-        this.scene.translate(-7.6,2.5,0);
-        this.scene.scale(1.5,1.5,0.5);
-        this.pyramid.display();
-        this.scene.popMatrix();
-
-        //rear wing (below cylinder)
-        this.scene.pushMatrix();
-        this.scene.translate(-7.6,1.5,0);
-        this.scene.scale(1.5,1.5,0.5);
+        this.scene.translate(-9.5,2,0);
+        this.scene.rotate(Math.PI * 90 / 180, 0, 0,1);
         this.scene.rotate(Math.PI * 180 / 180, 1, 0,0);
+        this.scene.scale(2,3,0.6);
         this.pyramid.display();
         this.scene.popMatrix();
 
         //helice
-
-        //helice center
         this.scene.pushMatrix();
         this.scene.translate(0,4,0);
-        this.scene.scale(0.5,0.5,0.5);
-        this.cube.display();
-        this.scene.popMatrix();
-
-        //heli 1
-        this.scene.pushMatrix();
-        this.scene.translate(2,4,0);
-        this.scene.scale(4,0.2,0.2);
-        this.cube.display();
-        this.scene.popMatrix();
-
-        //heli 2
-        this.scene.pushMatrix();
-        this.scene.rotate(Math.PI * 180 / 180, 0, 1,0);
-        this.scene.translate(2,4,0);
-        this.scene.scale(4,0.2,0.2);
-        this.cube.display();
-        this.scene.popMatrix();
-
-        //heli 3
-        this.scene.pushMatrix();
-        this.scene.rotate(Math.PI * 90 / 180, 0, 1,0);
-        this.scene.translate(2,4,0);
-        this.scene.scale(4,0.2,0.2);
-        this.cube.display();
-        this.scene.popMatrix();
-
-        //heli 4
-        this.scene.pushMatrix();
-        this.scene.rotate(Math.PI * (-90) / 180, 0, 1,0);
-        this.scene.translate(2,4,0);
-        this.scene.scale(4,0.2,0.2);
-        this.cube.display();
-        this.scene.popMatrix();
-
-        //heli support
-        this.scene.pushMatrix();
-        this.scene.translate(0,3.5,0);
-        this.scene.rotate(Math.PI * (-90) / 180, 0, 0,1);
-        this.scene.scale(1,0.2,0.2);
-        this.cube.display();
-        this.scene.popMatrix();
+        this.silverFuselage.apply();
+        this.helice.display();
+        this.scene.popMatrix()
 
 
         //landing gear
-
-        //suport 1
         this.scene.pushMatrix();
-        this.scene.translate(-1.5,-3.6,2);
-        this.scene.rotate(Math.PI * 45 / 180, 1, 0, 0);
-        this.scene.scale(0.15,0.15,2);
-        this.cylinder.display();
+        this.scene.translate(0, -3.6, 2);
+        this.landingGear.display();
         this.scene.popMatrix();
 
-        //suport 2
-        this.scene.pushMatrix();
-        this.scene.translate(1.5,-3.6,2);
-        this.scene.rotate(Math.PI * 45 / 180, 1, 0, 0);
-        this.scene.scale(0.15,0.15,2);
-        this.cylinder.display();
-        this.scene.popMatrix();
-
-        //suport 3
         this.scene.pushMatrix();
         this.scene.scale(1,1,-1);
-        this.scene.translate(-1.5,-3.6,2);
-        this.scene.rotate(Math.PI * 45 / 180, 1, 0, 0);
-        this.scene.scale(0.15,0.15,2);
-        this.cylinder.display();
+        this.scene.translate(0, -3.6, 2);
+        this.landingGear.display();
         this.scene.popMatrix();
 
-        //suport 4
+        //tail helice
         this.scene.pushMatrix();
-        this.scene.scale(1,1,-1);
-        this.scene.translate(1.5,-3.6,2);
-        this.scene.rotate(Math.PI * 45 / 180, 1, 0, 0);
-        this.scene.scale(0.15,0.15,2);
-        this.cylinder.display();
+        this.scene.translate(-8,2,1);
+        this.scene.scale(0.4,0.4,0.4);
+        this.scene.rotate(Math.PI * 90 / 180, 1, 0,0);
+        this.helice.display();
         this.scene.popMatrix();
 
-        //base support 1
         this.scene.pushMatrix();
-        this.scene.translate(2.45,-3.6,2);
-        this.scene.rotate(Math.PI * 90 / 180, 0, 1, 0);
-        this.scene.scale(0.15,0.15,5);
-        this.cylinder.display();
+        this.scene.translate(3,1.5,0);
+        this.scene.rotate(Math.PI * 60 / 180, 0, 0,1);
+        this.scene.scale(0.5,1,1.5);
+        this.silver.apply();
+        this.sphere.display();
         this.scene.popMatrix();
-
-        //base support 2
-        this.scene.pushMatrix();
-        this.scene.scale(1,1,-1);
-        this.scene.translate(2.45,-3.6,2);
-        this.scene.rotate(Math.PI * 90 / 180, 0, 1, 0);
-        this.scene.scale(0.15,0.15,5);
-        this.cylinder.display();
-        this.scene.popMatrix();
+        
 
     }
 }
