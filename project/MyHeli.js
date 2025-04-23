@@ -1,5 +1,6 @@
 import {CGFobject, CGFappearance} from '../lib/CGF.js';
 import { MyUnitCubeQuad } from '../tp2/MyUnitCubeQuad.js';
+import { MyBucket } from './MyBucket.js';
 import { MyCylinder } from './MyCylinder.js';
 import { MyHelice } from './MyHelice.js';
 import { MyLandingGear } from './MyLandingGear.js';
@@ -21,6 +22,7 @@ export class MyHeli extends CGFobject {
         this.pyramid = new MyPyramid(this.scene, 4, 1);
         this.helice = new MyHelice(this.scene);
         this.landingGear = new MyLandingGear(this.scene);
+        this.bucket = new MyBucket(this.scene, 3,2);
 
         //the fuselage will be red (fire figthing helicopter)
         this.fuselage = new CGFappearance(this.scene);
@@ -115,6 +117,18 @@ export class MyHeli extends CGFobject {
         this.sphere.display();
         this.scene.popMatrix();
         
+        //bucket
+        this.scene.pushMatrix();
+        this.scene.translate(0,-8,0);
+        this.bucket.display();
+        this.scene.popMatrix();
+
+        //bucket cable
+        this.scene.pushMatrix();
+        this.scene.rotate(Math.PI * (-90) / 180, 1, 0, 0);
+        this.scene.scale(0.1,0.1,8);
+        this.cylinder.display();
+        this.scene.popMatrix();
 
     }
 }

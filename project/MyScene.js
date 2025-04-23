@@ -126,7 +126,7 @@ export class MyScene extends CGFscene {
     this.forest.display();
 
     this.pushMatrix();
-    this.translate(5,20,0);
+    this.translate(5,15,0);
     this.heli.display();
     this.popMatrix();
     
