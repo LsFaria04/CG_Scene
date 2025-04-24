@@ -19,7 +19,7 @@ export class MyHeli extends CGFobject {
         this.sphere = new MySphere(this.scene, 80, 80, false);
         this.cube = new MyUnitCubeQuad(this.scene);
         this.cylinder = new MyCylinder(this.scene, 90, 1); 
-        this.pyramid = new MyPyramid(this.scene, 4, 1, 1, 0, false);
+        this.pyramid = new MyPyramid(this.scene, 4, 1,1, 1, 0, false);
         this.helice = new MyHelice(this.scene);
         this.landingGear = new MyLandingGear(this.scene);
         this.bucket = new MyBucket(this.scene, 3,2);
@@ -126,7 +126,7 @@ export class MyHeli extends CGFobject {
         //bucket cable
         this.scene.pushMatrix();
         this.scene.rotate(Math.PI * (-90) / 180, 1, 0, 0);
-        this.scene.scale(0.1,0.1,8);
+        this.scene.scale(0.1,0.1,7.3);
         this.cylinder.display();
         this.scene.popMatrix();
 
