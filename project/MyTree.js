@@ -13,8 +13,7 @@ export class MyTree extends CGFobject {
         this.radius = radius;
         this.height = height;
         this.color = color;
-        this.cone = new MyCone(scene, 90, 10,this.height * 0.2, inclination, axis === 'x' ? true : false);
-        this.pyramid = new MyPyramid(scene, 8, 5,1,inclination, axis === 'x' ? true : false);
+        this.cone = new MyCone(scene, 90, 10,this.height * 0.4,inclination, axis === 'x' ? true : false);
         this.treeColor = color;
         this.treeTexture = treeTexture;
         this.leavesTexture = leavesTexture;
@@ -22,6 +21,18 @@ export class MyTree extends CGFobject {
     }
 
     initBuffers(){
+        this.pyramids = [];
+
+        //pre-process the pyramids that will be part of the tree
+        const numbPyramids = Math.round(this.height * 0.8);
+        if(numbPyramids == 0) numbPyramids = 1;
+        const radiusScaleStep = 3 / numbPyramids;
+        let radiusScale = 3;
+        for(let i = 0; i < numbPyramids; i++){
+            this.pyramids.push(new MyPyramid(this.scene, 8, 5,1,this.radius * radiusScale,this.inclination, this.axis === 'x' ? true : false));
+            radiusScale -= radiusScaleStep;
+        }
+
         this.material = new CGFappearance(this.scene);
         this.material.setAmbient(0.29,0.15,0.00, 1.0);
         this.material.setDiffuse(0.29,0.15,0.00, 1.0);
@@ -48,24 +59,24 @@ export class MyTree extends CGFobject {
         this.cone.display();
         this.scene.popMatrix();
 
+        //displays the pyramids that were previouly pre-processed
         const numbPyramids = Math.round(this.height * 0.8);
         if(numbPyramids == 0) numbPyramids = 1;
         this.material2.apply();
-        const radiusScaleStep = 1.5 / numbPyramids;
-        let radiusScale = 2.5;
+        const radiusScaleStep = 3 / numbPyramids;
+        let radiusScale = 3;
         let translateDist = Math.sin(this.inclination * Math.PI / 180);
         for(let i = 0; i < numbPyramids; i++){
             this.scene.pushMatrix();
             if(this.axis === 'x')
                 this.scene.translate(translateDist  ,this.height * 0.1 + i*0.8,0);
             else if(this.axis === 'z')
-                this.scene.translate(0,this.height * 0.1 + i*0.8,translateDist);
-            this.scene.scale(this.radius * radiusScale, 1, this.radius * radiusScale);
-            this.pyramid.display();
+                this.scene.translate(0,this.height * 0.2 + i*0.8,translateDist);
+            this.pyramids[i].display();
             this.scene.popMatrix();
             radiusScale -= radiusScaleStep;
 
-            translateDist += Math.sin(this.inclination * Math.PI / 180) * this.radius * radiusScale;
+            translateDist += Math.sin(this.inclination * Math.PI / 180);
         }
         
     }
