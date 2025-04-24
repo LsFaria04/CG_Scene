@@ -19,7 +19,7 @@ export class MyHeli extends CGFobject {
         this.sphere = new MySphere(this.scene, 80, 80, false);
         this.cube = new MyUnitCubeQuad(this.scene);
         this.cylinder = new MyCylinder(this.scene, 90, 1); 
-        this.pyramid = new MyPyramid(this.scene, 4, 1);
+        this.pyramid = new MyPyramid(this.scene, 4, 1, 1, 0, false);
         this.helice = new MyHelice(this.scene);
         this.landingGear = new MyLandingGear(this.scene);
         this.bucket = new MyBucket(this.scene, 3,2);
