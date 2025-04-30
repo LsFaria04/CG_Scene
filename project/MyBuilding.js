@@ -35,8 +35,8 @@ export class MyBuilding extends CGFobject {
 
         // Building appearance
         this.buildingAppearance = new CGFappearance(scene);
-        this.buildingAppearance.setAmbient(...buildingColor, 1.0);
-        this.buildingAppearance.setDiffuse(...buildingColor, 1.0);
+        this.buildingAppearance.setAmbient(...buildingColor);
+        this.buildingAppearance.setDiffuse(...buildingColor);
         this.buildingAppearance.setSpecular(0.1, 0.1, 0.1, 1.0);
         this.buildingAppearance.setShininess(5.0);
     }
@@ -50,7 +50,7 @@ export class MyBuilding extends CGFobject {
             this.cube.display();
         };
 
-        const windowHeight = this.floorHeight * 0.5;
+        const windowHeight = Math.min(this.floorHeight * 0.5, this.centralWidth / this.windowsPerFloor * 0.5);
         const windowWidth = windowHeight;
         // --- Central module ---
         this.scene.pushMatrix();
