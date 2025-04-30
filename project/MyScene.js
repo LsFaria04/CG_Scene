@@ -2,7 +2,7 @@ import { CGFscene, CGFcamera, CGFaxis, CGFappearance, CGFtexture } from "../lib/
 import { MyPanorama } from "./MyPanorama.js";
 import { MyPlane } from "./MyPlane.js";
 import { MySphere } from "./MySphere.js";
-import { MyBuilding } from './MyBuilding.js';
+import { MyBuilding } from "./MyBuilding.js";
 
 /**
  * MyScene
@@ -33,12 +33,21 @@ export class MyScene extends CGFscene {
     //textures
     this.panoramaTexture = new CGFtexture(this, 'textures/panorama2.jpg');
     this.grassTexture = new CGFtexture(this, 'textures/grass.jpg');
+    this.window1Texture = new CGFtexture(this, 'textures/window1.png');
 
     //Initialize scene objects
     this.axis = new CGFaxis(this, 20, 1);
     this.plane = new MyPlane(this, 64);
     this.sphere = new MySphere(this, 100, 100, true);
     this.panorama = new MyPanorama(this, this.panoramaTexture, [10,0,10]);
+    this.building = new MyBuilding(
+      this,
+      40, // total width
+      5,
+      3,  // windows per floor
+      this.window1Texture,
+      [0.9, 0.9, 0.9, 1] // light gray color
+    );
 
     this.material = new CGFappearance(this);
     this.material.setAmbient(1, 1, 1, 1);
@@ -47,14 +56,6 @@ export class MyScene extends CGFscene {
     this.material.setShininess(10.0);
     this.material.setTexture(this.grassTexture);
     this.material.setTextureWrap('REPEAT', 'REPEAT');
-
-    this.building = new MyBuilding(
-      this,
-      12, // total width
-      3,  // side module floors
-      3,  // windows per floor
-      3 // width
-    );
   }
   initLights() {
     this.lights[0].setPosition(200, 200, 200, 1);
@@ -123,8 +124,9 @@ export class MyScene extends CGFscene {
     this.rotate(-Math.PI / 2, 1, 0, 0);
     this.plane.display();
     this.popMatrix();
-    
-    
+
+    this.pushMatrix();
     this.building.display();
+    this.popMatrix();
   }
 }
