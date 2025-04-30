@@ -53,7 +53,7 @@ export class MyScene extends CGFscene {
       [0.9, 0.9, 0.9, 1] // light gray color
     );
     this.forest = new MyForest(this, 5, 5, [-50,0,0], 8, this.treeTexture, this.leavesTexture);
-    this.heli = new MyHeli(this, [0,0,0], 0, [0,0,0]);
+    this.heli = new MyHeli(this, [0,20,0], 0, [0,0,0]);
 
     this.material = new CGFappearance(this);
     this.material.setAmbient(1, 1, 1, 1);
@@ -168,19 +168,11 @@ export class MyScene extends CGFscene {
     this.forest.display();
 
     this.pushMatrix();
-    this.translate(5,15,0);
-    this.heli.display();
-    this.popMatrix();
-    
-    this.forest.display();
-
-    this.pushMatrix();
-    this.translate(5,15,0);
     this.heli.display();
     this.popMatrix();
 
     this.pushMatrix();
-    //this.building.display();
+    this.building.display();
     this.popMatrix();
   }
 }

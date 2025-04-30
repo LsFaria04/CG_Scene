@@ -16,6 +16,7 @@ export class MyHeli extends CGFobject {
         this.orientation = orientation;
         this.velocityVec = velocityVec;
         this.aceleration = 0;
+        this.isBreaking = false;
         this.init();
     }
 
@@ -89,6 +90,14 @@ export class MyHeli extends CGFobject {
     display(){
         this.scene.translate(this.position[0], this.position[1], this.position[2]); //global position
         this.scene.rotate(Math.PI * this.orientation / 180, 0, 1, 0); //global orientation
+
+        //increase inclination when is acelerating
+        if(this.aceleration > 0){
+            this.scene.rotate(Math.PI * (-1 * this.aceleration) / 180, 0, 0, 1);
+        }
+        else if(this.aceleration < 0 ){
+            this.scene.rotate(Math.PI * (1 * (-this.aceleration)) / 180, 0, 0, 1);
+        }
 
 
         //cockpit
