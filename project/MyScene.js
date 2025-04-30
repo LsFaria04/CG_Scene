@@ -46,9 +46,9 @@ export class MyScene extends CGFscene {
     this.panorama = new MyPanorama(this, this.panoramaTexture, [10,0,10]);
     this.building = new MyBuilding(
       this,
-      40, // total width
-      5,
-      3,  // windows per floor
+      50, // total width
+      4,
+      2,  // windows per floor
       this.window1Texture,
       [0.9, 0.9, 0.9, 1] // light gray color
     );
