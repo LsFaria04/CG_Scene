@@ -36,17 +36,17 @@ export class MyWindow extends CGFobject {
       ];
       // Normals all facing +Y for a front-facing pane
       this.normals = [
-        0, 1, 0,
-        0, 1, 0,
-        0, 1, 0,
-        0, 1, 0
+        1, 0, 0,
+        1, 0, 0,
+        1, 0, 0,
+        1, 0, 0
       ];
 
       this.texCoords = [
-        0, 0, // bottom left (u=0, v=0)
-        1, 0, // bottom right (u=1, v=0)
-        0, 1, // top left (u=0, v=1)
-        1, 1  // top right (u=1, v=1)
+        0, 1, // bottom left (u=0, v=0)
+        1, 1, // bottom right (u=1, v=0)
+        0, 0, // top left (u=0, v=1)
+        1, 0  // top right (u=1, v=1)
       ];
 
       // Use triangles as primitive type
