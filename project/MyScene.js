@@ -4,6 +4,7 @@ import { MyHeli } from "./MyHeli.js";
 import { MyPanorama } from "./MyPanorama.js";
 import { MyPlane } from "./MyPlane.js";
 import { MySphere } from "./MySphere.js";
+import { MyBuilding } from "./MyBuilding.js";
 
 /**
  * MyScene
@@ -34,6 +35,7 @@ export class MyScene extends CGFscene {
     //textures
     this.panoramaTexture = new CGFtexture(this, 'textures/panorama2.jpg');
     this.grassTexture = new CGFtexture(this, 'textures/grass.jpg');
+    this.window1Texture = new CGFtexture(this, 'textures/window1.png');
     this.leavesTexture = new CGFtexture(this, 'textures/leaves2.jpg');
     this.treeTexture = new CGFtexture(this, 'textures/tree.jpg');
 
@@ -42,6 +44,14 @@ export class MyScene extends CGFscene {
     this.plane = new MyPlane(this, 64, 0, 64, 0, 64);
     this.sphere = new MySphere(this, 100, 100, true);
     this.panorama = new MyPanorama(this, this.panoramaTexture, [10,0,10]);
+    this.building = new MyBuilding(
+      this,
+      40, // total width
+      5,
+      3,  // windows per floor
+      this.window1Texture,
+      [0.9, 0.9, 0.9, 1] // light gray color
+    );
     this.forest = new MyForest(this, 5, 5, [-20,0,0], 8, this.treeTexture, this.leavesTexture);
     this.heli = new MyHeli(this);
 
@@ -52,7 +62,6 @@ export class MyScene extends CGFscene {
     this.material.setShininess(10.0);
     this.material.setTexture(this.grassTexture);
     this.material.setTextureWrap('REPEAT', 'REPEAT');
-
 
   }
   initLights() {
@@ -130,6 +139,15 @@ export class MyScene extends CGFscene {
     this.heli.display();
     this.popMatrix();
     
-    
+    this.forest.display();
+
+    this.pushMatrix();
+    this.translate(5,15,0);
+    this.heli.display();
+    this.popMatrix();
+
+    this.pushMatrix();
+    this.building.display();
+    this.popMatrix();
   }
 }
