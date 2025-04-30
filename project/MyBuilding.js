@@ -98,7 +98,7 @@ export class MyBuilding extends CGFobject {
                 this.scene.pushMatrix();
                 let xPosL = -(this.centralWidth / 2 + this.sideWidth / 2) + localX;
                 this.scene.translate(xPosL, yPos, windowBottomZ);
-                this.scene.scale(windowWidth, windowHeight, 1.0);
+                this.scene.scale(windowWidth, windowHeight * 10, 1.0);
                 this.window.display();
                 this.scene.popMatrix();
 

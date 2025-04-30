@@ -52,8 +52,8 @@ export class MyScene extends CGFscene {
       this.window1Texture,
       [0.9, 0.9, 0.9, 1] // light gray color
     );
-    this.forest = new MyForest(this, 5, 5, [-20,0,0], 8, this.treeTexture, this.leavesTexture);
-    this.heli = new MyHeli(this);
+    this.forest = new MyForest(this, 5, 5, [-50,0,0], 8, this.treeTexture, this.leavesTexture);
+    this.heli = new MyHeli(this, [0,0,0], 0, [0,0,0]);
 
     this.material = new CGFappearance(this);
     this.material.setAmbient(1, 1, 1, 1);
@@ -62,6 +62,8 @@ export class MyScene extends CGFscene {
     this.material.setShininess(10.0);
     this.material.setTexture(this.grassTexture);
     this.material.setTextureWrap('REPEAT', 'REPEAT');
+
+    this.initTime = Date.now();;
 
   }
   initLights() {
@@ -80,25 +82,56 @@ export class MyScene extends CGFscene {
     );
   }
   checkKeys() {
-    var text = "Keys pressed: ";
+    var text = "";
     var keysPressed = false;
 
     // Check for key codes e.g. in https://keycode.info/
     if (this.gui.isKeyPressed("KeyW")) {
-      text += " W ";
+      text += "W";
       keysPressed = true;
     }
 
     if (this.gui.isKeyPressed("KeyS")) {
-      text += " S ";
+      text += "S";
       keysPressed = true;
     }
-    if (keysPressed)
-      console.log(text);
+
+    if (this.gui.isKeyPressed("KeyD")) {
+      text += "D";
+      keysPressed = true;
+    }
+
+    if (this.gui.isKeyPressed("KeyA")) {
+      text += "A";
+      keysPressed = true;
+    }
+    return text;
   }
 
   update(t) {
-    this.checkKeys();
+    const keysPressed = this.checkKeys();
+    let aceleration = 0;
+    let rotation = 0;
+
+    //will use scale factor in the future
+    if(keysPressed.includes('W')){
+      aceleration += 2; 
+    }
+    if(keysPressed.includes('S')){
+      aceleration -= 2; 
+    }
+    if(keysPressed.includes('A')){
+      rotation += 5;
+    }
+    if(keysPressed.includes('D')){
+      rotation -= 5;
+    }
+
+    const deltaT = t - this.initTime;
+    this.heli.turn(rotation);
+    this.heli.acelerate(aceleration);
+    this.heli.update(deltaT);
+    this.initTime = t;
   }
 
   setDefaultAppearance() {
@@ -147,7 +180,7 @@ export class MyScene extends CGFscene {
     this.popMatrix();
 
     this.pushMatrix();
-    this.building.display();
+    //this.building.display();
     this.popMatrix();
   }
 }

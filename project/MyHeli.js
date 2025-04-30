@@ -8,10 +8,14 @@ import { MyPyramid } from './MyPyramid.js';
 import { MySphere } from './MySphere.js';
 
 export class MyHeli extends CGFobject {
-    constructor(scene)
+    constructor(scene, position, orientation, velocityVec)
     {
         super(scene);
         this.scene = scene;
+        this.position = position;
+        this.orientation = orientation;
+        this.velocityVec = velocityVec;
+        this.aceleration = 0;
         this.init();
     }
 
@@ -46,7 +50,45 @@ export class MyHeli extends CGFobject {
         this.silver.setShininess(1.0);
     }
 
+    update(time){
+
+        const timeSeconds = time * 0.001;
+        this.position[0] += this.velocityVec[0] * timeSeconds;
+        this.position[2] += this.velocityVec[2] * timeSeconds;
+
+    }
+
+    turn(v){
+        this.orientation += v;
+
+        this.velocityVec[0] = Math.cos(Math.PI * this.orientation / 180);
+        this.velocityVec[2] = -Math.sin(Math.PI * this.orientation / 180); 
+    }
+    acelerate(v){   
+        this.aceleration += v;
+        if(v === 0 && this.aceleration > 0){
+                this.aceleration -= 0.5; // decrease aceleration because no aceleration is being added
+        }
+
+        if(v === 0 && this.aceleration < 0){
+                this.aceleration += 0.5; // decrease aceleration because no aceleration is being added
+        }
+
+        if(this.aceleration > 10){
+            this.aceleration = 10;
+        }
+        else if(this.aceleration < -10){
+            this.aceleration = -10;
+        }
+
+        this.velocityVec[0] *= this.aceleration;
+        this.velocityVec[2] *= this.aceleration;
+
+    }
+
     display(){
+        this.scene.translate(this.position[0], this.position[1], this.position[2]); //global position
+        this.scene.rotate(Math.PI * this.orientation / 180, 0, 1, 0); //global orientation
 
 
         //cockpit
