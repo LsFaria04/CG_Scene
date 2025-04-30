@@ -1,6 +1,6 @@
 import { CGFscene, CGFcamera, CGFaxis, CGFappearance, CGFtexture } from "../lib/CGF.js";
 import { MyForest } from "./MyForest.js";
-import { MyHeli } from "./MyHeli.js";
+import { HeliStates, MyHeli } from "./MyHeli.js";
 import { MyPanorama } from "./MyPanorama.js";
 import { MyPlane } from "./MyPlane.js";
 import { MySphere } from "./MySphere.js";
@@ -63,7 +63,7 @@ export class MyScene extends CGFscene {
     this.material.setTexture(this.grassTexture);
     this.material.setTextureWrap('REPEAT', 'REPEAT');
 
-    this.initTime = Date.now();;
+    this.initTime = Date.now();
 
   }
   initLights() {
@@ -105,6 +105,12 @@ export class MyScene extends CGFscene {
       text += "A";
       keysPressed = true;
     }
+ 
+    if (this.gui.isKeyPressed("KeyP")) {
+      text += "P";
+      keysPressed = true;
+    }
+
     return text;
   }
 
@@ -114,17 +120,34 @@ export class MyScene extends CGFscene {
     let rotation = 0;
 
     //will use scale factor in the future
-    if(keysPressed.includes('W')){
-      aceleration += 2; 
+    if(this.heli.state === HeliStates.CRUISING){
+      if(keysPressed.includes('W')){
+        aceleration += 2; 
+      }
+      if(keysPressed.includes('S')){
+        aceleration -= 2; 
+      }
+      if(keysPressed.includes('A')){
+        rotation += 5;
+      }
+      if(keysPressed.includes('D')){
+        rotation -= 5;
+      }
     }
-    if(keysPressed.includes('S')){
-      aceleration -= 2; 
+
+    //special keys. These keys start special heli states
+    if(keysPressed.includes('P') && (this.heli.state === HeliStates.REST || this.heli.state === HeliStates.ON_LAKE)){
+      this.heli.updateState(HeliStates.RISING);
+      this.heli.updateVelocityVect([0,1,0]);
     }
-    if(keysPressed.includes('A')){
-      rotation += 5;
+    if(keysPressed.includes('L') && (this.heli.state === HeliStates.CRUISING)){
+      
+      this.heli.updateState(HeliStates.RETURNING_HELI);
     }
-    if(keysPressed.includes('D')){
-      rotation -= 5;
+
+    //block the aceleration when the heli is in a special state
+    if(this.heli.state === HeliStates.RISING || this.heli.state === HeliStates.RETURNING_HELI || this.heli.state === HeliStates.DESCENDING_LAKE){
+      aceleration = 1;
     }
 
     const deltaT = t - this.initTime;

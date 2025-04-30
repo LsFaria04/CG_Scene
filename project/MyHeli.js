@@ -7,6 +7,15 @@ import { MyLandingGear } from './MyLandingGear.js';
 import { MyPyramid } from './MyPyramid.js';
 import { MySphere } from './MySphere.js';
 
+export const HeliStates = {
+    REST: 1,
+    CRUISING: 2,
+    RETURNING_HELI: 3,
+    DESCENDING_LAKE: 4,
+    RISING: 5,
+    ON_LAKE: 6,
+  };
+
 export class MyHeli extends CGFobject {
     constructor(scene, position, orientation, velocityVec)
     {
@@ -17,6 +26,8 @@ export class MyHeli extends CGFobject {
         this.velocityVec = velocityVec;
         this.aceleration = 0;
         this.isBreaking = false;
+        this.heliceRotation = 0;
+        this.state = HeliStates.REST;
         this.init();
     }
 
@@ -51,21 +62,60 @@ export class MyHeli extends CGFobject {
         this.silver.setShininess(1.0);
     }
 
-    update(time){
+    updateState(newState){
+        this.state = newState;
+    }
 
+    updateVelocityVect(newVect){
+        this.velocityVec = newVect;
+    }
+
+    update(time){
         const timeSeconds = time * 0.001;
-        this.position[0] += this.velocityVec[0] * timeSeconds;
-        this.position[2] += this.velocityVec[2] * timeSeconds;
+        //update the heli position
+        if(this.state !== HeliStates.RISING){
+            this.position[0] += this.velocityVec[0] * timeSeconds;
+            this.position[2] += this.velocityVec[2] * timeSeconds;
+        }
+        else{
+            if(this.position[1] > 30){
+                //cruising altitude reached. Resets the values and change state
+                this.state = HeliStates.CRUISING;
+                this.velocityVec = [0,0,0];
+                this.aceleration = 0;
+                return;
+            }
+            this.position[1] += this.velocityVec[1] * timeSeconds;
+
+            
+        }
+
+
+
+        if(this.state !== HeliStates.REST){
+            //update the helice rotation if it is not in rest
+            this.heliceRotation += 50;
+            if(this.heliceRotation >= 360){
+                this.heliceRotation = 0;
+            }
+        }
+
 
     }
 
     turn(v){
+        if(this.state !== HeliStates.CRUISING){
+            //can only turn if cruising
+            return;
+        }
+
         this.orientation += v;
 
         this.velocityVec[0] = Math.cos(Math.PI * this.orientation / 180);
         this.velocityVec[2] = -Math.sin(Math.PI * this.orientation / 180); 
     }
-    acelerate(v){   
+    acelerate(v){ 
+
         this.aceleration += v;
         if(v === 0 && this.aceleration > 0){
                 this.aceleration -= 0.5; // decrease aceleration because no aceleration is being added
@@ -82,8 +132,17 @@ export class MyHeli extends CGFobject {
             this.aceleration = -10;
         }
 
-        this.velocityVec[0] *= this.aceleration;
-        this.velocityVec[2] *= this.aceleration;
+        //rise the heli when the is rising
+        if(this.state === HeliStates.RISING){
+            this.velocityVec[1] = 1; //resets the vect in the y direction
+            this.velocityVec[1] *= this.aceleration; //updated the vector
+        }
+        else{
+            
+            this.velocityVec[0] *= this.aceleration;
+            this.velocityVec[2] *= this.aceleration;
+        }
+        
 
     }
 
@@ -92,10 +151,10 @@ export class MyHeli extends CGFobject {
         this.scene.rotate(Math.PI * this.orientation / 180, 0, 1, 0); //global orientation
 
         //increase inclination when is acelerating
-        if(this.aceleration > 0){
+        if(this.aceleration > 0 && this.state === HeliStates.CRUISING){
             this.scene.rotate(Math.PI * (-1 * this.aceleration) / 180, 0, 0, 1);
         }
-        else if(this.aceleration < 0 ){
+        else if(this.aceleration < 0 && this.state === HeliStates.CRUISING){
             this.scene.rotate(Math.PI * (1 * (-this.aceleration)) / 180, 0, 0, 1);
         }
 
@@ -135,6 +194,7 @@ export class MyHeli extends CGFobject {
         //helice
         this.scene.pushMatrix();
         this.scene.translate(0,4,0);
+        this.scene.rotate(Math.PI * this.heliceRotation /180, 0,1,0); //helice rotation when the engine is on
         this.silverFuselage.apply();
         this.helice.display();
         this.scene.popMatrix()
@@ -157,6 +217,7 @@ export class MyHeli extends CGFobject {
         this.scene.translate(-8,2,1);
         this.scene.scale(0.4,0.4,0.4);
         this.scene.rotate(Math.PI * 90 / 180, 1, 0,0);
+        this.scene.rotate(Math.PI * this.heliceRotation /180, 0,1,0); //helice rotation when the engine is on
         this.helice.display();
         this.scene.popMatrix();
 
