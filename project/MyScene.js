@@ -2,6 +2,7 @@ import { CGFscene, CGFcamera, CGFaxis, CGFappearance, CGFtexture } from "../lib/
 import { MyPanorama } from "./MyPanorama.js";
 import { MyPlane } from "./MyPlane.js";
 import { MySphere } from "./MySphere.js";
+import { MyBuilding } from './MyBuilding.js';
 
 /**
  * MyScene
@@ -47,6 +48,13 @@ export class MyScene extends CGFscene {
     this.material.setTexture(this.grassTexture);
     this.material.setTextureWrap('REPEAT', 'REPEAT');
 
+    this.building = new MyBuilding(
+      this,
+      12, // total width
+      3,  // side module floors
+      3,  // windows per floor
+      3 // width
+    );
   }
   initLights() {
     this.lights[0].setPosition(200, 200, 200, 1);
@@ -117,5 +125,6 @@ export class MyScene extends CGFscene {
     this.popMatrix();
     
     
+    this.building.display();
   }
 }
