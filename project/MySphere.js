@@ -1,13 +1,15 @@
 import {CGFobject} from '../lib/CGF.js';
 
 export class MySphere extends CGFobject {
-    constructor(scene, slices, stacks, isInverted)
+    constructor(scene, slices, stacks, isInverted, isSemi)
     {
         super(scene);
         this.scene;
         this.slices = slices;
         this.stacks = stacks;
         this.isInverted = isInverted;
+        this.isSemi = isSemi;
+
         this.initBuffers();
     }
     
@@ -21,7 +23,7 @@ export class MySphere extends CGFobject {
 
         let inclination = 180;
         let azimuth = 0;
-        let inclinationStep = 180 / this.stacks;
+        let inclinationStep = (this.isSemi ? 90 : 180) / this.stacks;
         let azimuthStep = 360 / this.slices;
 
         inclination -= inclinationStep;
@@ -33,11 +35,14 @@ export class MySphere extends CGFobject {
         //vertices around southPole
         for(let i = 0; i < this.slices + 1; i++){
             this.vertices.push(Math.sin(inclination * Math.PI / 180) * Math.sin(azimuth * Math.PI / 180), Math.cos(inclination * Math.PI / 180), Math.sin(inclination * Math.PI / 180) * Math.cos(azimuth * Math.PI / 180));
+
             if(this.isInverted)
                 this.normals.push(-(Math.sin(inclination * Math.PI / 180) * Math.sin(azimuth * Math.PI / 180)),-(Math.cos(inclination * Math.PI / 180)),-(Math.sin(inclination * Math.PI / 180) * Math.cos(azimuth * Math.PI / 180)));
             else
                 this.normals.push(Math.sin(inclination * Math.PI / 180) * Math.sin(azimuth * Math.PI / 180), Math.cos(inclination * Math.PI / 180), Math.sin(inclination * Math.PI / 180) * Math.cos(azimuth * Math.PI / 180));
+
             this.texCoords.push(azimuth / 360, inclination / 180);
+
             azimuth += azimuthStep ;
         }
         let offsetVertice = 1; //the last vertice before the ones we are defining the indices
@@ -80,17 +85,21 @@ export class MySphere extends CGFobject {
 
         }
 
-        //north pole vertice
-        this.vertices.push(0,1,0);
-        this.texCoords.push(0.5,0);
 
-        //Connect the north pole vertices
-        for(let i = 0; i < this.slices; i++){
-            if(this.isInverted)
-                this.indices.push(this.vertices.length / 3 - 1, offsetVertice + i + 1 , offsetVertice + i);
-            else
-                
-                this.indices.push(offsetVertice + i, offsetVertice + i + 1 , this.vertices.length / 3 - 1);
+        //only needs a north pole if is a complete sphere
+        if(!this.isSemi){
+            //north pole vertice
+            this.vertices.push(0,1,0);
+            this.texCoords.push(0.5,0);
+
+            //Connect the north pole vertices
+            for(let i = 0; i < this.slices; i++){
+                if(this.isInverted)
+                    this.indices.push(this.vertices.length / 3 - 1, offsetVertice + i + 1 , offsetVertice + i);
+                else
+                    
+                    this.indices.push(offsetVertice + i, offsetVertice + i + 1 , this.vertices.length / 3 - 1);
+            }
         }
 
         this.primitiveType = this.scene.gl.TRIANGLES;

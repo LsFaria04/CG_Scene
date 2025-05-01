@@ -1,9 +1,9 @@
 import { CGFscene, CGFcamera, CGFaxis, CGFappearance, CGFtexture } from "../lib/CGF.js";
 import { MyForest } from "./MyForest.js";
+import { HeliStates, MyHeli } from "./MyHeli.js";
 import { MyPanorama } from "./MyPanorama.js";
 import { MyPlane } from "./MyPlane.js";
 import { MySphere } from "./MySphere.js";
-import { MyTree } from "./MyTree.js";
 import { MyBuilding } from "./MyBuilding.js";
 
 /**
@@ -41,10 +41,9 @@ export class MyScene extends CGFscene {
 
     //Initialize scene objects
     this.axis = new CGFaxis(this, 20, 1);
-    this.plane = new MyPlane(this, 64);
+    this.plane = new MyPlane(this, 64, 0, 64, 0, 64);
     this.sphere = new MySphere(this, 100, 100, true);
     this.panorama = new MyPanorama(this, this.panoramaTexture, [10,0,10]);
-    this.forest = new MyForest(this, 4, 5, [-50,0,0], 8, this.treeTexture, this.leavesTexture);
     this.building = new MyBuilding(
       this,
       50, // total width
@@ -53,7 +52,10 @@ export class MyScene extends CGFscene {
       this.window1Texture,
       [0.9, 0.9, 0.9, 1] // light gray color
     );
+    this.forest = new MyForest(this, 5, 5, [-50,0,0], 8, this.treeTexture, this.leavesTexture);
+    this.heli = new MyHeli(this, [0,20,0], 0, [0,0,0]);
 
+    //grass matrial that is aplied to the plane
     this.material = new CGFappearance(this);
     this.material.setAmbient(1, 1, 1, 1);
     this.material.setDiffuse(1, 1, 1, 1);
@@ -61,6 +63,11 @@ export class MyScene extends CGFscene {
     this.material.setShininess(10.0);
     this.material.setTexture(this.grassTexture);
     this.material.setTextureWrap('REPEAT', 'REPEAT');
+
+    //aux variable to help coordinate the animations
+    this.initTime = Date.now();
+
+    this.speedFactor = 1;
 
   }
   initLights() {
@@ -79,25 +86,94 @@ export class MyScene extends CGFscene {
     );
   }
   checkKeys() {
-    var text = "Keys pressed: ";
+    var text = "";
     var keysPressed = false;
 
     // Check for key codes e.g. in https://keycode.info/
     if (this.gui.isKeyPressed("KeyW")) {
-      text += " W ";
+      text += "W";
       keysPressed = true;
     }
 
     if (this.gui.isKeyPressed("KeyS")) {
-      text += " S ";
+      text += "S";
       keysPressed = true;
     }
-    if (keysPressed)
-      console.log(text);
+
+    if (this.gui.isKeyPressed("KeyD")) {
+      text += "D";
+      keysPressed = true;
+    }
+
+    if (this.gui.isKeyPressed("KeyA")) {
+      text += "A";
+      keysPressed = true;
+    }
+ 
+    if (this.gui.isKeyPressed("KeyP")) {
+      text += "P";
+      keysPressed = true;
+    }
+
+    if (this.gui.isKeyPressed("KeyR")) {
+      text += "R";
+      keysPressed = true;
+    }
+
+    if (this.gui.isKeyPressed("KeyL")) {
+      text += "L";
+      keysPressed = true;
+    }
+
+
+    return text;
   }
 
   update(t) {
-    this.checkKeys();
+    const keysPressed = this.checkKeys();
+    let aceleration = 0;
+    let rotation = 0;
+
+    //will use scale factor in the future
+    if(this.heli.state === HeliStates.CRUISING){
+      if(keysPressed.includes('W')){
+        aceleration += 2 * this.speedFactor; 
+      }
+      if(keysPressed.includes('S')){
+        aceleration -= 2 * this.speedFactor; 
+      }
+      if(keysPressed.includes('A')){
+        rotation += 5 * this.speedFactor;
+      }
+      if(keysPressed.includes('D')){
+        rotation -= 5 * this.speedFactor;
+      }
+    }
+
+    //special keys. These keys start special heli states
+    if(keysPressed.includes('P') && (this.heli.state === HeliStates.REST || this.heli.state === HeliStates.ON_LAKE)){
+      this.heli.updateState(HeliStates.RISING);
+      this.heli.updateVelocityVect([0,1,0]);
+    }
+    if(keysPressed.includes('L') && (this.heli.state === HeliStates.CRUISING)){
+      aceleration = 0;
+      this.heli.updateState(HeliStates.RETURNING_HELI);
+      this.heli.redirectToHeli();
+    }
+    if(keysPressed.includes('R')){
+      this.heli.reset();
+    }
+
+    //block the aceleration when the heli is in a special state
+    if(this.heli.state === HeliStates.RISING || this.heli.state === HeliStates.RETURNING_HELI || this.heli.state === HeliStates.DESCENDING_LAKE || this.heli.state === HeliStates.DESCENDING_HELI){
+      aceleration = 1 * this.speedFactor;
+    }
+
+    const deltaT = t - this.initTime;
+    this.heli.turn(rotation);
+    this.heli.acelerate(aceleration);
+    this.heli.update(deltaT);
+    this.initTime = t;
   }
 
   setDefaultAppearance() {
@@ -130,7 +206,12 @@ export class MyScene extends CGFscene {
     this.rotate(-Math.PI / 2, 1, 0, 0);
     this.plane.display();
     this.popMatrix();
+    
     this.forest.display();
+
+    this.pushMatrix();
+    this.heli.display();
+    this.popMatrix();
 
     this.pushMatrix();
     this.building.display();

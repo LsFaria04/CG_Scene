@@ -75,7 +75,6 @@ export class MyCylinder extends CGFobject {
         //down face
         this.vertices.push(0,0,- (this.stacks - 1));
         lastIDX = this.vertices.length / 3 - 1;
-        console.log(lastIDX)
         for(var i = 0; i < this.slices - 1; i++){
             let reference = (i * 2) + ((this.stacks - 1) * this.slices * 2)  + 1;
             let reference_back = (this.slices * 2) + ((this.stacks - 1) * this.slices * 2)  + reference;

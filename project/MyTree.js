@@ -78,6 +78,8 @@ export class MyTree extends CGFobject {
 
             translateDist += Math.sin(this.inclination * Math.PI / 180);
         }
+
+        
         
     }
 }
