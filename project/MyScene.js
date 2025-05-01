@@ -44,7 +44,7 @@ export class MyScene extends CGFscene {
     this.plane = new MyPlane(this, 64);
     this.sphere = new MySphere(this, 100, 100, true);
     this.panorama = new MyPanorama(this, this.panoramaTexture, [10,0,10]);
-    this.forest = new MyForest(this, 10, 10, [0,0,0], 8, this.treeTexture, this.leavesTexture);
+    this.forest = new MyForest(this, 4, 5, [-50,0,0], 8, this.treeTexture, this.leavesTexture);
     this.building = new MyBuilding(
       this,
       50, // total width
