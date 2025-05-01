@@ -55,6 +55,7 @@ export class MyScene extends CGFscene {
     this.forest = new MyForest(this, 5, 5, [-50,0,0], 8, this.treeTexture, this.leavesTexture);
     this.heli = new MyHeli(this, [0,20,0], 0, [0,0,0]);
 
+    //grass matrial that is aplied to the plane
     this.material = new CGFappearance(this);
     this.material.setAmbient(1, 1, 1, 1);
     this.material.setDiffuse(1, 1, 1, 1);
@@ -63,7 +64,10 @@ export class MyScene extends CGFscene {
     this.material.setTexture(this.grassTexture);
     this.material.setTextureWrap('REPEAT', 'REPEAT');
 
+    //aux variable to help coordinate the animations
     this.initTime = Date.now();
+
+    this.speedFactor = 1;
 
   }
   initLights() {
@@ -111,6 +115,17 @@ export class MyScene extends CGFscene {
       keysPressed = true;
     }
 
+    if (this.gui.isKeyPressed("KeyR")) {
+      text += "R";
+      keysPressed = true;
+    }
+
+    if (this.gui.isKeyPressed("KeyL")) {
+      text += "L";
+      keysPressed = true;
+    }
+
+
     return text;
   }
 
@@ -122,16 +137,16 @@ export class MyScene extends CGFscene {
     //will use scale factor in the future
     if(this.heli.state === HeliStates.CRUISING){
       if(keysPressed.includes('W')){
-        aceleration += 2; 
+        aceleration += 2 * this.speedFactor; 
       }
       if(keysPressed.includes('S')){
-        aceleration -= 2; 
+        aceleration -= 2 * this.speedFactor; 
       }
       if(keysPressed.includes('A')){
-        rotation += 5;
+        rotation += 5 * this.speedFactor;
       }
       if(keysPressed.includes('D')){
-        rotation -= 5;
+        rotation -= 5 * this.speedFactor;
       }
     }
 
@@ -141,13 +156,17 @@ export class MyScene extends CGFscene {
       this.heli.updateVelocityVect([0,1,0]);
     }
     if(keysPressed.includes('L') && (this.heli.state === HeliStates.CRUISING)){
-      
+      aceleration = 0;
       this.heli.updateState(HeliStates.RETURNING_HELI);
+      this.heli.redirectToHeli();
+    }
+    if(keysPressed.includes('R')){
+      this.heli.reset();
     }
 
     //block the aceleration when the heli is in a special state
-    if(this.heli.state === HeliStates.RISING || this.heli.state === HeliStates.RETURNING_HELI || this.heli.state === HeliStates.DESCENDING_LAKE){
-      aceleration = 1;
+    if(this.heli.state === HeliStates.RISING || this.heli.state === HeliStates.RETURNING_HELI || this.heli.state === HeliStates.DESCENDING_LAKE || this.heli.state === HeliStates.DESCENDING_HELI){
+      aceleration = 1 * this.speedFactor;
     }
 
     const deltaT = t - this.initTime;

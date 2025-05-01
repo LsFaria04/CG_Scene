@@ -12,8 +12,9 @@ export const HeliStates = {
     CRUISING: 2,
     RETURNING_HELI: 3,
     DESCENDING_LAKE: 4,
-    RISING: 5,
-    ON_LAKE: 6,
+    DESCENDING_HELI: 5,
+    RISING: 6,
+    ON_LAKE: 7,
   };
 
 export class MyHeli extends CGFobject {
@@ -28,6 +29,8 @@ export class MyHeli extends CGFobject {
         this.isBreaking = false;
         this.heliceRotation = 0;
         this.state = HeliStates.REST;
+        this.orientationToHeliport = 0; //helps the heli to return to the heliport
+        this.bucketPercentage = 0; //percante of the bucket that is visible (is outside the heli)
         this.init();
     }
 
@@ -70,24 +73,80 @@ export class MyHeli extends CGFobject {
         this.velocityVec = newVect;
     }
 
+    reset(){
+        //resets the current state to the rest state
+        this.state = HeliStates.REST;
+        this.velocityVec = [0,0,0];
+        this.aceleration = 0;
+        this.position = [0,20,0];
+        this.orientation = 0;
+    }
+
+    redirectToHeli(){
+        //considering that the heliport is at the position [0,20,0]
+        //negative of the atan because the axis are inverted
+        if(this.position[0] > 0)
+            this.orientationToHeliport = 180 + (180 * (-Math.atan(this.position[2] / this.position[0])) / Math.PI); //needs to adjust to the inserse angle
+        else if(this.position[0] < 0)
+            this.orientationToHeliport = 180 * (-Math.atan(this.position[2] / this.position[0])) / Math.PI;
+        else{
+            this.orientationToHeliport = this.orientation; //is above the heliport
+        }
+
+        
+        this.velocityVec = [0,0,0]; //stop the heli to turn it
+        //the other operations are made in the other methods (update, turn and acelerate)
+    }
+
     update(time){
         const timeSeconds = time * 0.001;
+
         //update the heli position
-        if(this.state !== HeliStates.RISING){
-            this.position[0] += this.velocityVec[0] * timeSeconds;
-            this.position[2] += this.velocityVec[2] * timeSeconds;
-        }
-        else{
+        if(this.state === HeliStates.RISING ){
             if(this.position[1] > 30){
                 //cruising altitude reached. Resets the values and change state
                 this.state = HeliStates.CRUISING;
                 this.velocityVec = [0,0,0];
                 this.aceleration = 0;
+                this.bucketPercentage = 1;
                 return;
             }
             this.position[1] += this.velocityVec[1] * timeSeconds;
 
-            
+            this.bucketPercentage = (this.position[1] - 20) / 10;
+            if(this.bucketPercentage > 1){
+                this.bucketPercentage = 1;
+            }
+
+        }
+        else if(this.state === HeliStates.DESCENDING_HELI){
+            if(Math.abs(this.position[1] - 20) <= 0.2){
+                //Heliport altitude reached. Resets the values and change state
+                this.state = HeliStates.REST;
+                this.velocityVec = [0,0,0];
+                this.aceleration = 0;
+                this.bucketPercentage = 0;
+                return;
+            }
+            this.position[1] += this.velocityVec[1] * timeSeconds;
+            this.bucketPercentage = Math.abs(this.position[1] - 20) / 10;
+        }
+        else{
+
+            if(this.state === HeliStates.RETURNING_HELI && Math.abs(0 - this.position[0]) < 1 ){
+                //special update when the heli is returnin to the heliport and the position is in the range of the final position
+                this.position[0] = 0;
+                this.position[2] = 0;
+
+                this.state = HeliStates.DESCENDING_HELI; //update the state to the descending to the heliport
+                this.velocityVec = [0,-1,0];
+                return;
+            }
+
+
+            this.position[0] += this.velocityVec[0] * timeSeconds;
+            this.position[2] += this.velocityVec[2] * timeSeconds;
+   
         }
 
 
@@ -104,8 +163,29 @@ export class MyHeli extends CGFobject {
     }
 
     turn(v){
-        if(this.state !== HeliStates.CRUISING){
-            //can only turn if cruising
+        if(this.state !== HeliStates.CRUISING && this.state !== HeliStates.RETURNING_HELI){
+            //can only turn if cruising or returning to the heliport
+            return;
+        }
+
+        //special turning when the hli is returnin to the heliport
+        if(this.state === HeliStates.RETURNING_HELI && this.orientation !== this.orientationToHeliport){
+            
+            if(Math.abs(this.orientation - this.orientationToHeliport) < 5){
+                //final adjustment
+                this.orientation = this.orientationToHeliport;
+
+                //update the velocity vector to point to the heliport
+                this.velocityVec[0] = Math.cos(Math.PI * this.orientation / 180);
+                this.velocityVec[2] = -Math.sin(Math.PI * this.orientation / 180);
+            }
+            else if(this.orientationToHeliport > this.orientation)
+                this.orientation += 5;
+            else{
+                this.orientation -= 5;
+            }
+
+            
             return;
         }
 
@@ -132,10 +212,14 @@ export class MyHeli extends CGFobject {
             this.aceleration = -10;
         }
 
-        //rise the heli when the is rising
+        //rise the heli when the state is rising
         if(this.state === HeliStates.RISING){
             this.velocityVec[1] = 1; //resets the vect in the y direction
             this.velocityVec[1] *= this.aceleration; //updated the vector
+        }
+        else if(this.state === HeliStates.DESCENDING_HELI){
+            this.velocityVec[1] = -1; //resets the vect in the y direction
+            this.velocityVec[1] *= v; //updated the vector (constant speed in this case)
         }
         else{
             
@@ -231,14 +315,15 @@ export class MyHeli extends CGFobject {
         
         //bucket
         this.scene.pushMatrix();
-        this.scene.translate(0,-8,0);
+        this.scene.translate(0,-9 * this.bucketPercentage,0); //its final position depends on the percentage that determines how much it is outside of ther heli
+        this.scene.translate(0,1,0); //the bucket starts hidden inside the heli
         this.bucket.display();
         this.scene.popMatrix();
 
         //bucket cable
         this.scene.pushMatrix();
         this.scene.rotate(Math.PI * (-90) / 180, 1, 0, 0);
-        this.scene.scale(0.1,0.1,7.3);
+        this.scene.scale(0.1,0.1,7.3 * this.bucketPercentage);//its final position depends on the percentage that determines how much it is outside of ther heli (in this case its lenght)
         this.cylinder.display();
         this.scene.popMatrix();
 
