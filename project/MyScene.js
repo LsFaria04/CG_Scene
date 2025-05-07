@@ -55,7 +55,10 @@ export class MyScene extends CGFscene {
     );
     this.forest = new MyForest(this, 5, 5, [-50,0,0], 8, this.treeTexture, this.leavesTexture);
     this.heli = new MyHeli(this, [0,20,0], 0, [0,0,0]);
-    this.lake = new MyLake(this, [-30,0,40], 30);
+    //auxiliary values to help calculate if the heli is above the lake
+    this.lakeposition = [-30,0,40];
+    this.lakeradius = 30;
+    this.lake = new MyLake(this, this.lakeposition, this.lakeradius);
 
     //grass matrial that is aplied to the plane
     this.material = new CGFappearance(this);
@@ -154,21 +157,43 @@ export class MyScene extends CGFscene {
 
     //special keys. These keys start special heli states
     if(keysPressed.includes('P') && (this.heli.state === HeliStates.REST || this.heli.state === HeliStates.ON_LAKE)){
-      this.heli.updateState(HeliStates.RISING);
+      if(this.heli.state === HeliStates.REST){
+        this.heli.updateState(HeliStates.RISING);
+      }
+      else{
+        this.heli.updateState(HeliStates.RISING_LAKE);
+      }
+      
       this.heli.updateVelocityVect([0,1,0]);
     }
     if(keysPressed.includes('L') && (this.heli.state === HeliStates.CRUISING)){
       aceleration = 0;
-      this.heli.updateState(HeliStates.RETURNING_HELI);
-      this.heli.redirectToHeli();
+      //check if the heli is above the lake
+      const heliPosition = this.heli.position
+      const distToLakeCenter = Math.sqrt(Math.pow(this.lakeposition[0]  - heliPosition[0], 2) + Math.pow(this.lakeposition[2]  - heliPosition[2], 2));
+
+      if(distToLakeCenter < this.lakeradius && this.heli.velocityVec.join() == "0,0,0"){
+        this.heli.updateState(HeliStates.DESCENDING_LAKE);
+      }
+      else{
+        //is not above the lake so the heli returns to the heliport
+        this.heli.updateState(HeliStates.RETURNING_HELI);
+        this.heli.redirectToHeli();
+      }
     }
     if(keysPressed.includes('R')){
       this.heli.reset();
     }
 
     //block the aceleration when the heli is in a special state
-    if(this.heli.state === HeliStates.RISING || this.heli.state === HeliStates.RETURNING_HELI || this.heli.state === HeliStates.DESCENDING_LAKE || this.heli.state === HeliStates.DESCENDING_HELI){
+    if(this.heli.state === HeliStates.RISING || this.heli.state === HeliStates.RISING_LAKE
+      || this.heli.state === HeliStates.RETURNING_HELI 
+      || this.heli.state === HeliStates.DESCENDING_HELI){
+
       aceleration = 1 * this.speedFactor;
+    }
+    else if(this.heli.state === HeliStates.DESCENDING_LAKE){
+      aceleration = 1.5 * this.speedFactor;
     }
 
     const deltaT = t - this.initTime;
