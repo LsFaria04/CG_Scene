@@ -5,6 +5,7 @@ import { MyPanorama } from "./MyPanorama.js";
 import { MyPlane } from "./MyPlane.js";
 import { MySphere } from "./MySphere.js";
 import { MyBuilding } from "./MyBuilding.js";
+import { MyLake } from "./MyLake.js";
 
 /**
  * MyScene
@@ -54,6 +55,7 @@ export class MyScene extends CGFscene {
     );
     this.forest = new MyForest(this, 5, 5, [-50,0,0], 8, this.treeTexture, this.leavesTexture);
     this.heli = new MyHeli(this, [0,20,0], 0, [0,0,0]);
+    this.lake = new MyLake(this, [-30,0,40], 30);
 
     //grass matrial that is aplied to the plane
     this.material = new CGFappearance(this);
@@ -81,7 +83,7 @@ export class MyScene extends CGFscene {
       0.7,
       0.1,
       1000,
-      vec3.fromValues(10, 5, 10),
+      vec3.fromValues(80, 40, 80),
       vec3.fromValues(0, 0, 0)
     );
   }
@@ -215,6 +217,10 @@ export class MyScene extends CGFscene {
 
     this.pushMatrix();
     this.building.display();
+    this.popMatrix();
+
+    this.pushMatrix();
+    this.lake.display();
     this.popMatrix();
   }
 }

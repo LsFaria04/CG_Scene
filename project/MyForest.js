@@ -24,7 +24,7 @@ export class MyForest extends CGFobject {
                 let inclination = getRandomInt(-10, 10);
                 let axis = getRandomInt(1,2) === 1 ? 'x' : 'z';
                 let radius = getRandomInt(3,6)/4;
-                let height = getRandomInt(15,30);
+                let height = getRandomInt(15,25);
                 let color_select = getRandomInt(1,3);
                 let color = [0.05,0.42,0.01];
                 switch(color_select){
