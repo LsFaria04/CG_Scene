@@ -1,11 +1,13 @@
 import {CGFobject, CGFappearance} from '../lib/CGF.js';
 import { MyUnitCubeQuad } from '../tp2/MyUnitCubeQuad.js';
 import { MyBucket } from './MyBucket.js';
+import { MyCircle } from './MyCircle.js';
 import { MyCylinder } from './MyCylinder.js';
 import { MyHelice } from './MyHelice.js';
 import { MyLandingGear } from './MyLandingGear.js';
 import { MyPyramid } from './MyPyramid.js';
 import { MySphere } from './MySphere.js';
+import { MyWaterDrop } from './MyWaterDrop.js';
 
 export const HeliStates = {
     REST: 1,
@@ -15,7 +17,8 @@ export const HeliStates = {
     DESCENDING_HELI: 5,
     RISING: 6,
     RISING_LAKE: 7,
-    ON_LAKE: 8
+    ON_LAKE: 8,
+    RELEASING_WATER: 9
   };
 
 export class MyHeli extends CGFobject {
@@ -31,6 +34,8 @@ export class MyHeli extends CGFobject {
         this.state = HeliStates.REST;
         this.orientationToHeliport = 0; //helps the heli to return to the heliport
         this.bucketPercentage = 0; //percante of the bucket that is visible (is outside the heli)
+        this.waterDrops = [];
+        this.hasWater = false;
         this.init();
     }
 
@@ -42,6 +47,7 @@ export class MyHeli extends CGFobject {
         this.helice = new MyHelice(this.scene);
         this.landingGear = new MyLandingGear(this.scene);
         this.bucket = new MyBucket(this.scene, 3,2);
+        this.circle = new MyCircle(this.scene, 80);
 
         //the fuselage will be red (fire figthing helicopter)
         this.fuselage = new CGFappearance(this.scene);
@@ -63,6 +69,12 @@ export class MyHeli extends CGFobject {
         this.silver.setDiffuse(0.6627, 0.6227, 0.6784, 0.0);
         this.silver.setSpecular(0.6627, 0.6227, 0.6784, 1.0);
         this.silver.setShininess(1.0);
+
+        this.waterColor = new CGFappearance(this.scene);
+        this.waterColor.setAmbient(0.8314, 0.9451, 0.9765, 0.1);
+        this.waterColor.setDiffuse(0.8314, 0.9451, 0.9765, 0.1);
+        this.waterColor.setSpecular(0.8314, 0.9451, 0.9765, 1.0);
+        this.waterColor.setShininess(1.0);
     }
 
     updateState(newState){
@@ -73,6 +85,36 @@ export class MyHeli extends CGFobject {
         this.velocityVec = newVect;
     }
 
+    releaseWater(){
+        this.hasWater = false; //bucket is empty because we are releasing all the water
+        for (let i = 0; i < 500; i++) {
+            let randomOffset = [
+                (Math.random() - 0.5), 
+                0, 
+                (Math.random() - 0.5),
+            ];
+            let initialVelocity = [
+                (Math.random() - 0.5) * 5, 
+                -5, 
+                (Math.random() - 0.5) * 5
+            ];
+            const dropPosition = [
+                this.position[0] + randomOffset[0],
+                this.position[1] - 9 + randomOffset[1],
+                this.position[2] + randomOffset[2]
+            ];
+
+            const direction = [
+                Math.sin(Math.PI * this.orientation / 180) * Math.sin(Math.PI * (-this.aceleration) / 180),
+                Math.cos(Math.PI * (-this.aceleration) / 180),
+                Math.cos(Math.PI * this.orientation / 180) * Math.sin(Math.PI * (-this.aceleration) / 180)
+            ];
+
+            
+            this.waterDrops.push(new MyWaterDrop(this.scene, dropPosition, initialVelocity, direction));
+        }
+    }
+
     reset(){
         //resets the current state to the rest state
         this.state = HeliStates.REST;
@@ -80,6 +122,8 @@ export class MyHeli extends CGFobject {
         this.aceleration = 0;
         this.position = [0,20,0];
         this.orientation = 0;
+        this.hasWater = false;
+        this.waterDrops = [];
     }
 
     redirectToHeli(){
@@ -96,6 +140,19 @@ export class MyHeli extends CGFobject {
         
         this.velocityVec = [0,0,0]; //stop the heli to turn it
         //the other operations are made in the other methods (update, turn and acelerate)
+    }
+
+    updateDrops(Time) {
+        //update the water drops position and filter the drops with lifetime equal or below zero
+        this.waterDrops = this.waterDrops.filter(drop => drop.lifetime > 0 && drop.position[1] > 0);
+        this.waterDrops.forEach(drop => drop.update(Time));
+
+        //no more water to drop
+        if(this.waterDrops.length === 0){
+            this.state = HeliStates.CRUISING;
+            this.waterDrops = [];
+        }
+
     }
 
     update(time){
@@ -136,6 +193,7 @@ export class MyHeli extends CGFobject {
             if(Math.abs(this.position[1]) <= 8){
                 //the heli bucket id at the lake. Change the state to resting on Lake
                 this.state = HeliStates.ON_LAKE;
+                this.hasWater = true;
                 this.velocityVec = [0,0,0];
                 this.aceleration = 0;
                 return;
@@ -152,6 +210,10 @@ export class MyHeli extends CGFobject {
                 this.state = HeliStates.DESCENDING_HELI; //update the state to the descending to the heliport
                 this.velocityVec = [0,-1,0];
                 return;
+            }
+
+            if(this.state === HeliStates.RELEASING_WATER){
+                this.updateDrops(timeSeconds);
             }
 
 
@@ -174,7 +236,7 @@ export class MyHeli extends CGFobject {
     }
 
     turn(v){
-        if(this.state !== HeliStates.CRUISING && this.state !== HeliStates.RETURNING_HELI){
+        if(this.state !== HeliStates.CRUISING && this.state !== HeliStates.RETURNING_HELI && this.state !== HeliStates.RELEASING_WATER){
             //can only turn if cruising or returning to the heliport
             return;
         }
@@ -242,14 +304,23 @@ export class MyHeli extends CGFobject {
     }
 
     display(){
+        //water drops are displayed first because they aren't related with the heli global position
+        this.scene.pushMatrix();
+        this.waterColor.apply();
+        for(let i = 0; i < this.waterDrops.length; i++){
+            this.waterDrops[i].display(this.sphere);
+        }
+        this.scene.popMatrix();
+
+
         this.scene.translate(this.position[0], this.position[1], this.position[2]); //global position
         this.scene.rotate(Math.PI * this.orientation / 180, 0, 1, 0); //global orientation
 
         //increase inclination when is acelerating
-        if(this.aceleration > 0 && this.state === HeliStates.CRUISING){
+        if(this.aceleration > 0 && (this.state === HeliStates.CRUISING || this.state === HeliStates.RELEASING_WATER)){
             this.scene.rotate(Math.PI * (-1 * this.aceleration) / 180, 0, 0, 1);
         }
-        else if(this.aceleration < 0 && this.state === HeliStates.CRUISING){
+        else if(this.aceleration < 0 && (this.state === HeliStates.CRUISING || this.state === HeliStates.RELEASING_WATER)){
             this.scene.rotate(Math.PI * (1 * (-this.aceleration)) / 180, 0, 0, 1);
         }
 
@@ -303,7 +374,7 @@ export class MyHeli extends CGFobject {
 
         this.scene.pushMatrix();
         this.scene.scale(1,1,-1);
-        this.scene.translate(0, -3.6, 2);
+        this.scene.translate(0,-3.6, 2);
         this.landingGear.display();
         this.scene.popMatrix();
 
@@ -337,6 +408,19 @@ export class MyHeli extends CGFobject {
         this.scene.scale(0.1,0.1,7.3 * this.bucketPercentage);//its final position depends on the percentage that determines how much it is outside of ther heli (in this case its lenght)
         this.cylinder.display();
         this.scene.popMatrix();
+
+        //water representation inside bucket
+        if(this.hasWater){
+            this.scene.pushMatrix();
+            this.scene.translate(0,-8.5,0);
+            this.scene.rotate(Math.PI * (-90) / 180, 1, 0, 0);
+            this.waterColor.apply();
+            this.scene.scale(0.95,1,0.95);
+            this.circle.display();
+            this.scene.popMatrix();
+        }
+
+        
 
     }
 }

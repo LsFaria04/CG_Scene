@@ -130,6 +130,11 @@ export class MyScene extends CGFscene {
       keysPressed = true;
     }
 
+    if (this.gui.isKeyPressed("KeyO")) {
+      text += "O";
+      keysPressed = true;
+    }
+
 
     return text;
   }
@@ -140,7 +145,7 @@ export class MyScene extends CGFscene {
     let rotation = 0;
 
     //will use scale factor in the future
-    if(this.heli.state === HeliStates.CRUISING){
+    if(this.heli.state === HeliStates.CRUISING || this.heli.state === HeliStates.RELEASING_WATER){
       if(keysPressed.includes('W')){
         aceleration += 2 * this.speedFactor; 
       }
@@ -163,7 +168,7 @@ export class MyScene extends CGFscene {
       else{
         this.heli.updateState(HeliStates.RISING_LAKE);
       }
-      
+
       this.heli.updateVelocityVect([0,1,0]);
     }
     if(keysPressed.includes('L') && (this.heli.state === HeliStates.CRUISING)){
@@ -183,6 +188,12 @@ export class MyScene extends CGFscene {
     }
     if(keysPressed.includes('R')){
       this.heli.reset();
+    }
+
+    //TODO: add a verification for the fire position
+    if(keysPressed.includes('O') && (this.heli.state === HeliStates.CRUISING) && (this.heli.hasWater)){
+      this.heli.updateState(HeliStates.RELEASING_WATER);
+      this.heli.releaseWater();
     }
 
     //block the aceleration when the heli is in a special state
