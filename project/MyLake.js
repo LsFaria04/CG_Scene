@@ -23,7 +23,7 @@ export class MyLake extends CGFobject {
     display(){
         this.scene.translate(this.position[0], this.position[1], this.position[2]);
         this.scene.translate(0,0.01,0);
-        this.scene.scale(this.radius / 2, 1, this.radius / 2);
+        this.scene.scale(this.radius, 1, this.radius);
         this.scene.rotate(Math.PI * (-90) / 180, 1,0,0);
         this.waterAppearance.apply();
         this.circle.display();

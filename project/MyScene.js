@@ -1,4 +1,4 @@
-import { CGFscene, CGFcamera, CGFaxis, CGFappearance, CGFtexture } from "../lib/CGF.js";
+import { CGFscene, CGFcamera, CGFaxis, CGFappearance, CGFtexture, CGFshader } from "../lib/CGF.js";
 import { MyForest } from "./MyForest.js";
 import { HeliStates, MyHeli } from "./MyHeli.js";
 import { MyPanorama } from "./MyPanorama.js";
@@ -40,6 +40,10 @@ export class MyScene extends CGFscene {
     this.treeTexture = new CGFtexture(this, 'textures/tree.jpg');
     this.window1Texture = new CGFtexture(this, 'textures/window1.png');
 
+    //shaders
+    this.helipadShader = new CGFshader(this.gl, "shaders/helipad.vert", "shaders/helipad.frag");
+
+
     //Initialize scene objects
     this.axis = new CGFaxis(this, 20, 1);
     this.plane = new MyPlane(this, 64, 0, 64, 0, 64);
@@ -51,13 +55,14 @@ export class MyScene extends CGFscene {
       4,
       2,  // windows per floor
       this.window1Texture,
-      [0.9, 0.9, 0.9, 1] // light gray color
+      [0.9, 0.9, 0.9, 1], // light gray color
+      this.helipadShader
     );
     this.forest = new MyForest(this, 5, 5, [-50,0,0], 8, this.treeTexture, this.leavesTexture);
     this.heli = new MyHeli(this, [0,20,0], 0, [0,0,0]);
     //auxiliary values to help calculate if the heli is above the lake
     this.lakeposition = [-30,0,40];
-    this.lakeradius = 30;
+    this.lakeradius = 15;
     this.lake = new MyLake(this, this.lakeposition, this.lakeradius);
 
     //grass matrial that is aplied to the plane
@@ -73,6 +78,7 @@ export class MyScene extends CGFscene {
     this.initTime = Date.now();
 
     this.speedFactor = 1;
+    this.transitionFactor = 0; //for the mix between textures in the helipad
 
   }
   initLights() {
@@ -206,6 +212,18 @@ export class MyScene extends CGFscene {
     else if(this.heli.state === HeliStates.DESCENDING_LAKE){
       aceleration = 1.5 * this.speedFactor;
     }
+
+    if (this.heli.state === HeliStates.RISING) {
+        this.helipadShader.setUniformsValues({isLanding: 0});
+        this.transitionFactor = Math.sin(t / 200 % 200); // smooth oscilation
+    } else if (this.heli.state === HeliStates.DESCENDING_HELI) {
+      this.helipadShader.setUniformsValues({isLanding: 1});
+        this.transitionFactor = Math.sin(t / 200 % 200); // changes to DOWN
+    } else {
+        this.transitionFactor = 0.0; // default state
+    }
+
+    this.helipadShader.setUniformsValues({transitionFactor: this.transitionFactor});
 
     const deltaT = t - this.initTime;
     this.heli.turn(rotation);

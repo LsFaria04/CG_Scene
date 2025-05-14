@@ -178,7 +178,7 @@ export class MyHeli extends CGFobject {
             }
         }
         else if(this.state === HeliStates.DESCENDING_HELI){
-            if(Math.abs(this.position[1] - 20) <= 0.2){
+            if((this.position[1] - 20) <= 0.2){
                 //Heliport altitude reached. Resets the values and change state
                 this.state = HeliStates.REST;
                 this.velocityVec = [0,0,0];
@@ -190,7 +190,7 @@ export class MyHeli extends CGFobject {
             this.bucketPercentage = Math.abs(this.position[1] - 20) / 10;
         }
         else if(this.state === HeliStates.DESCENDING_LAKE){    
-            if(Math.abs(this.position[1]) <= 8){
+            if(this.position[1] <= 8){
                 //the heli bucket id at the lake. Change the state to resting on Lake
                 this.state = HeliStates.ON_LAKE;
                 this.hasWater = true;

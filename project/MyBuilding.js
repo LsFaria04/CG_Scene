@@ -4,7 +4,7 @@ import { MyUnitCubeQuad } from "./MyUnitCubeQuad.js";
 import { MyCircle } from "./MyCircle.js";
 
 export class MyBuilding extends CGFobject {
-    constructor(scene, totalWidth, floors, windowsPerFloor, windowTexture, buildingColor) {
+    constructor(scene, totalWidth, floors, windowsPerFloor, windowTexture, buildingColor, helipadShader) {
         super(scene);
         this.totalWidth = totalWidth;
         this.floors = floors;
@@ -25,6 +25,11 @@ export class MyBuilding extends CGFobject {
         this.doorTexture = new CGFtexture(this.scene, 'textures/door.png');
         this.signTexture = new CGFtexture(this.scene, 'textures/sign.png');
         this.helipadTexture = new CGFtexture(this.scene, 'textures/helipad.png');
+        this.helipadTextureUP = new CGFtexture(this.scene, 'textures/helipad_UP.png');
+        this.helipadTextureDOWN = new CGFtexture(this.scene, 'textures/helipad_DOWN.png');
+        this.helipadShader = helipadShader;
+        this.helipadShader.setUniformsValues({ textureUP: 1 });
+        this.helipadShader.setUniformsValues({ textureDOWN: 2 });
 
         this.door = new MyWindow(scene, this.doorTexture);
         this.sign = new MyWindow(scene, this.signTexture);
@@ -39,6 +44,11 @@ export class MyBuilding extends CGFobject {
         this.buildingAppearance.setDiffuse(...buildingColor, 1.0);
         this.buildingAppearance.setSpecular(0.1, 0.1, 0.1, 1.0);
         this.buildingAppearance.setShininess(5.0);
+    }
+
+    setHeliPadTexture(texture){
+        //used to update the texture when the helicopter is rising or descending
+        this.helipadAppearance.setTexture(texture);
     }
 
     display() {
@@ -142,8 +152,13 @@ export class MyBuilding extends CGFobject {
         this.scene.pushMatrix();
         this.scene.translate(0, 0, roofZ + 0.01);
         this.scene.scale(6.0, 6.0, 1.0);
+        this.scene.rotate(Math.PI * 180 / 180, 0,0,1);
         this.helipadAppearance.apply();
+        this.scene.setActiveShader(this.helipadShader);
+        this.helipadTextureUP.bind(1);
+        this.helipadTextureDOWN.bind(2);
         this.circle.display();
+        this.scene.setActiveShader(this.scene.defaultShader);
         this.scene.popMatrix();
 
         this.scene.popMatrix(); // pop global rotation

@@ -23,7 +23,7 @@ export class MyCircle extends CGFobject {
       const y = Math.sin(angle);
       this.vertices.push(x, y, 0);
       this.normals.push(0, 0, 1);
-      this.texCoords.push(0.5 + 0.5 * x, 0.5 + 0.5 * y);
+      this.texCoords.push(0.5 - 0.5 * x, 0.5 + 0.5 * y);
 
       if (i > 0) {
         this.indices.push(0, i, i + 1);
