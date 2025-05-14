@@ -42,6 +42,7 @@ export class MyScene extends CGFscene {
 
     //shaders
     this.helipadShader = new CGFshader(this.gl, "shaders/helipad.vert", "shaders/helipad.frag");
+    this.heliLightsShader = new CGFshader(this.gl, "shaders/heliLights.vert", "shaders/heliLights.frag"); //not used
 
 
     //Initialize scene objects
@@ -79,6 +80,7 @@ export class MyScene extends CGFscene {
 
     this.speedFactor = 1;
     this.transitionFactor = 0; //for the mix between textures in the helipad
+    this.emissiveFactor = 0;
 
   }
   initLights() {
@@ -216,14 +218,18 @@ export class MyScene extends CGFscene {
     if (this.heli.state === HeliStates.RISING) {
         this.helipadShader.setUniformsValues({isLanding: 0});
         this.transitionFactor = Math.sin(t / 200 % 200); // smooth oscilation
+        this.emissiveFactor = 3 * Math.sin(t / 200 % 200);
     } else if (this.heli.state === HeliStates.DESCENDING_HELI) {
       this.helipadShader.setUniformsValues({isLanding: 1});
         this.transitionFactor = Math.sin(t / 200 % 200); // changes to DOWN
+        this.emissiveFactor = 3 * Math.sin(t / 200 % 200);
     } else {
         this.transitionFactor = 0.0; // default state
+        this.emissiveFactor = 0.0;
     }
 
     this.helipadShader.setUniformsValues({transitionFactor: this.transitionFactor});
+    this.building.updateLightMaterial(this.emissiveFactor);
 
     const deltaT = t - this.initTime;
     this.heli.turn(rotation);
@@ -248,6 +254,8 @@ export class MyScene extends CGFscene {
     this.loadIdentity();
     // Apply transformations corresponding to the camera position relative to the origin
     this.applyViewMatrix();
+
+    this.lights[0].update();
 
     // Draw axis
     this.axis.display();
