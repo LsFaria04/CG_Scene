@@ -57,7 +57,7 @@ export class MyScene extends CGFscene {
     this.heli = new MyHeli(this, [0,20,0], 0, [0,0,0]);
     //auxiliary values to help calculate if the heli is above the lake
     this.lakeposition = [-30,0,40];
-    this.lakeradius = 30;
+    this.lakeradius = 15;
     this.lake = new MyLake(this, this.lakeposition, this.lakeradius);
 
     //grass matrial that is aplied to the plane
