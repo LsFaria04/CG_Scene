@@ -71,9 +71,9 @@ export class MyHeli extends CGFobject {
         this.silver.setShininess(1.0);
 
         this.waterColor = new CGFappearance(this.scene);
-        this.waterColor.setAmbient(0.8314, 0.9451, 0.9765, 0.1);
-        this.waterColor.setDiffuse(0.8314, 0.9451, 0.9765, 0.1);
-        this.waterColor.setSpecular(0.8314, 0.9451, 0.9765, 1.0);
+        this.waterColor.setAmbient(0.5569, 0.8196, 1.0, 0.1);
+        this.waterColor.setDiffuse(0.5569, 0.8196, 1.0, 0.1);
+        this.waterColor.setSpecular(0.5569, 0.8196, 1.0, 1.0);
         this.waterColor.setShininess(1.0);
     }
 

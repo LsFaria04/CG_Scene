@@ -230,6 +230,7 @@ export class MyScene extends CGFscene {
 
     this.helipadShader.setUniformsValues({transitionFactor: this.transitionFactor});
     this.building.updateLightMaterial(this.emissiveFactor);
+    this.lake.update(t);
 
     const deltaT = t - this.initTime;
     this.heli.turn(rotation);
