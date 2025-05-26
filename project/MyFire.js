@@ -22,7 +22,8 @@ export class MyFire extends CGFobject {
         this.triangle = new MyTriangleBig(this.scene);
 
         this.flamePosition = [];
-        this.flameProportions = []
+        this.flameProportions = [];
+        this.flameOrientation = [];
         for(let i = 0; i < 10; i++){
             let offsetX = Math.random() * (this.width / 2) * 5 ; //mult by 8 because the trees have a separation of at most 8 units from each other
             let offsetY = Math.random() * (this.height / 2) * 5;
@@ -30,40 +31,46 @@ export class MyFire extends CGFobject {
             let isYNeg = Math.random() < 0.5 ? true : false;
             this.flamePosition.push([isXNeg ? this.centerPosition[0] - offsetX : this.centerPosition[0] + offsetX, isYNeg ? this.centerPosition[1] - offsetY : this.centerPosition[1] + offsetY, this.centerPosition[2]]);
             this.flameProportions.push([ Math.random() * 1.5,getRandomInt(1,2), 1]);
+            this.flameOrientation.push(Math.PI * 360 * Math.random() / 180);
         }
     }
 
-    checkColisionWithWater(waterDrops){
+    checkCollisionWithWater(waterDrops){
         let newFlamePosition = [];
         let newFlameProportion = [];
+        let newOrientation = [];
         for(let i = 0; i < this.flamePosition.length; i++){
-            let position = this.flamePosition.at(i);
+            let position = this.flamePosition[i];
             let isActive = true;
             for(let drop of waterDrops){
                 //check colision 
-                if(Math.abs(drop.position[0] - position[0]) < 1 && Math.abs(drop.position[1] - position[1]) < 1 && drop.position[2] < 1){
+                if((Math.abs(drop.position[0] - position[0]) < 2) && (Math.abs(drop.position[1] - position[2]) < 2) && (Math.abs(drop.position[2] - position[1]) < 3)){
                     isActive = false;
                     break;
                 }
                 
             }
             if(isActive){
-                newFlamePosition.push(this.flamePosition.at(i));
-                newFlameProportion.push(this.flameProportions.at(i));
+                newFlamePosition.push(position);
+                newFlameProportion.push(this.flameProportions[i]);
+                newOrientation.push(this.flameOrientation[i]);
             }
         }
 
         this.flamePosition = newFlamePosition;
         this.flameProportions = newFlameProportion;
+        this.flameOrientation = newOrientation;
     }
 
     display(){
         this.fireAppearance.apply();
         for(let i = 0; i < this.flamePosition.length ;i++){
             let position = this.flamePosition.at(i);
-            let proportion = this.flameProportions.at(i)
+            let proportion = this.flameProportions.at(i);
+            let orientation = this.flameOrientation.at(i);
             this.scene.pushMatrix();
             this.scene.translate(position[0], position[2], position[1]);
+            this.scene.rotate(orientation, 0, 1, 0);
             this.scene.scale(proportion[0],proportion[1], proportion[2]);
             this.triangle.display(); 
             this.scene.popMatrix();

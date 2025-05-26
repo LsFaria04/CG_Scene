@@ -210,10 +210,6 @@ export class MyScene extends CGFscene {
       }
     }
 
-    if(this.heli.state === HeliStates.RELEASING_WATER){
-      this.fire.checkColisionWithWater(this.heli.waterDrops);
-    }
-
     //block the aceleration when the heli is in a special state
     if(this.heli.state === HeliStates.RISING || this.heli.state === HeliStates.RISING_LAKE
       || this.heli.state === HeliStates.RETURNING_HELI 
@@ -229,6 +225,12 @@ export class MyScene extends CGFscene {
     this.heli.turn(rotation);
     this.heli.acelerate(aceleration);
     this.heli.update(deltaT);
+
+    //check colision with the fire after all the updates
+     if(this.heli.state === HeliStates.RELEASING_WATER){
+      this.fire.checkCollisionWithWater(this.heli.waterDrops);
+    }
+
     this.initTime = t;
   }
 
