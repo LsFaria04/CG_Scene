@@ -6,6 +6,7 @@ import { MyPlane } from "./MyPlane.js";
 import { MySphere } from "./MySphere.js";
 import { MyBuilding } from "./MyBuilding.js";
 import { MyLake } from "./MyLake.js";
+import { MyFire } from "./MyFire.js";
 
 /**
  * MyScene
@@ -66,6 +67,7 @@ export class MyScene extends CGFscene {
     this.lakeposition = [-30,0,40];
     this.lakeradius = 15;
     this.lake = new MyLake(this, this.lakeposition, this.lakeradius);
+    this.fire = new MyFire(this, 5, 5, [-50,0,0]);
 
     //grass matrial that is aplied to the plane
     this.material = new CGFappearance(this);
@@ -264,6 +266,10 @@ export class MyScene extends CGFscene {
 
     this.pushMatrix();
     this.lake.display();
+    this.popMatrix();
+
+    this.pushMatrix();
+    this.fire.display();
     this.popMatrix();
   }
 }
