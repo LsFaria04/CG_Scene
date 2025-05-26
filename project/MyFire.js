@@ -33,9 +33,33 @@ export class MyFire extends CGFobject {
         }
     }
 
+    checkColisionWithWater(waterDrops){
+        let newFlamePosition = [];
+        let newFlameProportion = [];
+        for(let i = 0; i < this.flamePosition.length; i++){
+            let position = this.flamePosition.at(i);
+            let isActive = true;
+            for(let drop of waterDrops){
+                //check colision 
+                if(Math.abs(drop.position[0] - position[0]) < 1 && Math.abs(drop.position[1] - position[1]) < 1 && drop.position[2] < 1){
+                    isActive = false;
+                    break;
+                }
+                
+            }
+            if(isActive){
+                newFlamePosition.push(this.flamePosition.at(i));
+                newFlameProportion.push(this.flameProportions.at(i));
+            }
+        }
+
+        this.flamePosition = newFlamePosition;
+        this.flameProportions = newFlameProportion;
+    }
+
     display(){
         this.fireAppearance.apply();
-        for(let i = 0; i < 10 ;i++){
+        for(let i = 0; i < this.flamePosition.length ;i++){
             let position = this.flamePosition.at(i);
             let proportion = this.flameProportions.at(i)
             this.scene.pushMatrix();

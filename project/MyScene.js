@@ -67,7 +67,10 @@ export class MyScene extends CGFscene {
     this.lakeposition = [-30,0,40];
     this.lakeradius = 15;
     this.lake = new MyLake(this, this.lakeposition, this.lakeradius);
-    this.fire = new MyFire(this, 5, 5, [-50,0,0]);
+    this.firePosition = [-50,0,0];
+    this.fireWidth = 5;
+    this.fireHeight = 5;
+    this.fire = new MyFire(this, this.fireWidth, this.fireHeight, this.firePosition);
 
     //grass matrial that is aplied to the plane
     this.material = new CGFappearance(this);
@@ -199,10 +202,16 @@ export class MyScene extends CGFscene {
       this.heli.reset();
     }
 
-    //TODO: add a verification for the fire position
     if(keysPressed.includes('O') && (this.heli.state === HeliStates.CRUISING) && (this.heli.hasWater)){
+      if(((this.firePosition[0] - this.fireWidth * 5) < this.heli.position[0])  && ((this.firePosition[0] + this.fireWidth * 5) > this.heli.position[0]) 
+      && ((this.firePosition[1] - this.fireHeight * 5) < this.heli.position[2])  && ((this.firePosition[1] + this.fireHeight * 5) > this.heli.position[2])){
       this.heli.updateState(HeliStates.RELEASING_WATER);
       this.heli.releaseWater();
+      }
+    }
+
+    if(this.heli.state === HeliStates.RELEASING_WATER){
+      this.fire.checkColisionWithWater(this.heli.waterDrops);
     }
 
     //block the aceleration when the heli is in a special state
