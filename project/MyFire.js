@@ -1,4 +1,6 @@
 import { CGFobject, CGFappearance, CGFtexture } from "../lib/CGF.js";
+import { MySmokeParticle } from "./MySmokeParticle.js";
+import { MySphere } from "./MySphere.js";
 import { MyTriangleBig } from "./MyTriangleBig.js";
 import { getRandomInt } from "./utils.js";
 
@@ -20,6 +22,15 @@ export class MyFire extends CGFobject {
         this.fireAppearance.setTexture(this.fireTexture);
         this.fireAppearance.setTextureWrap('REPEAT', 'REPEAT');
         this.triangle = new MyTriangleBig(this.scene);
+        this.sphere = new MySphere(this.scene, 60, 60, false, false);
+
+        this.smokeAppearance = new CGFappearance(this.scene);
+        this.smokeAppearance.setAmbient(0.451, 0.5098, 0.4627, 0.1);
+        this.smokeAppearance.setDiffuse(0.451, 0.5098, 0.4627, 1.0);
+        this.smokeAppearance.setSpecular(0.451, 0.5098, 0.4627, 1.0);
+
+        this.smokes = [];
+        this.smokeActive = false;
 
         this.flamePosition = [];
         this.flameProportions = [];
@@ -55,11 +66,56 @@ export class MyFire extends CGFobject {
                 newFlameProportion.push(this.flameProportions[i]);
                 newOrientation.push(this.flameOrientation[i]);
             }
+            else{
+                console.log("here")
+                this.releaseSmoke(position);
+            }
         }
 
         this.flamePosition = newFlamePosition;
         this.flameProportions = newFlameProportion;
         this.flameOrientation = newOrientation;
+    }
+
+    releaseSmoke(position){
+        this.smokeActive = true;
+        let smokeParticles = [];
+        for (let i = 0; i < 500; i++) {
+            let randomOffset = [
+                (Math.random() - 0.5), 
+                0, 
+                (Math.random() - 0.5),
+            ];
+            let initialVelocity = [
+                (Math.random() - 0.5) * 2, 
+                (Math.random() - 0.5) * 5, 
+                (Math.random() - 0.5) * 2,
+            ];
+            const smokePosition = [
+                position[0] + randomOffset[0],
+                position[1] + randomOffset[1],
+                position[2] + randomOffset[2]
+            ];
+
+            const direction = [
+                0,1,0
+            ];
+
+            
+            smokeParticles.push(new MySmokeParticle(this.scene, smokePosition, initialVelocity, direction));
+        }
+        this.smokes.push(smokeParticles);
+    }
+
+    update(t){
+        const timeSeconds = t * 0.001;
+        for(let i = 0; i < this.smokes.length; i++){
+            let smokeParticle = this.smokes[i];
+            smokeParticle = smokeParticle.filter(particle => particle.lifetime > 0);
+            smokeParticle.forEach(particle => particle.update(timeSeconds));
+            this.smokes[i] = smokeParticle;
+        }
+        this.smokes = this.smokes.filter(smokeParticle => smokeParticle.length > 0);
     }
 
     display(){
@@ -74,6 +130,25 @@ export class MyFire extends CGFobject {
             this.scene.scale(proportion[0],proportion[1], proportion[2]);
             this.triangle.display(); 
             this.scene.popMatrix();
+        }
+        //rotated flame to be seen in other perspectives
+        for(let i = 0; i < this.flamePosition.length ;i++){
+            let position = this.flamePosition.at(i);
+            let proportion = this.flameProportions.at(i);
+            let orientation = this.flameOrientation.at(i);
+            this.scene.pushMatrix();
+            this.scene.translate(position[0], position[2], position[1]);
+            this.scene.rotate(orientation + (Math.PI / 2), 0, 1, 0);
+            this.scene.scale(proportion[0],proportion[1], proportion[2]);
+            this.triangle.display(); 
+            this.scene.popMatrix();
+        }
+
+        this.smokeAppearance.apply();
+        for(let smokeParticles of this.smokes){
+            for(let particle of smokeParticles){
+                particle.display(this.sphere);
+            }
         }
         
     }
