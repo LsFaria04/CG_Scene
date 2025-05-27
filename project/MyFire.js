@@ -1,4 +1,4 @@
-import { CGFobject, CGFappearance, CGFtexture } from "../lib/CGF.js";
+import { CGFobject, CGFappearance, CGFtexture, CGFshader } from "../lib/CGF.js";
 import { MySmokeParticle } from "./MySmokeParticle.js";
 import { MySphere } from "./MySphere.js";
 import { MyTriangleBig } from "./MyTriangleBig.js";
@@ -23,6 +23,7 @@ export class MyFire extends CGFobject {
         this.fireAppearance.setTextureWrap('REPEAT', 'REPEAT');
         this.triangle = new MyTriangleBig(this.scene);
         this.sphere = new MySphere(this.scene, 10, 10, false, false);
+        this.fireShader = new CGFshader(this.scene.gl, "shaders/fire.vert","shaders/fire.frag" );
 
         this.smokeAppearance = new CGFappearance(this.scene);
         this.smokeAppearance.setAmbient(0.451, 0.5098, 0.4627, 0.1);
@@ -108,6 +109,7 @@ export class MyFire extends CGFobject {
 
     update(t){
         const timeSeconds = t * 0.001;
+        this.fireShader.setUniformsValues({timeFactor: Math.sin(timeSeconds) * 10 });
         for(let i = 0; i < this.smokes.length; i++){
             let smokeParticle = this.smokes[i];
             smokeParticle = smokeParticle.filter(particle => particle.lifetime > 0);
@@ -119,6 +121,8 @@ export class MyFire extends CGFobject {
 
     display(){
         this.fireAppearance.apply();
+        this.scene.setActiveShader(this.fireShader);
+        
         for(let i = 0; i < this.flamePosition.length ;i++){
             let position = this.flamePosition.at(i);
             let proportion = this.flameProportions.at(i);
@@ -129,7 +133,7 @@ export class MyFire extends CGFobject {
             this.scene.scale(proportion[0],proportion[1], proportion[2]);
             this.triangle.display(); 
             this.scene.popMatrix();
-        }
+        }/*
         //rotated flame to be seen in other perspectives
         for(let i = 0; i < this.flamePosition.length ;i++){
             let position = this.flamePosition.at(i);
@@ -141,7 +145,8 @@ export class MyFire extends CGFobject {
             this.scene.scale(proportion[0],proportion[1], proportion[2]);
             this.triangle.display(); 
             this.scene.popMatrix();
-        }
+        }*/
+        this.scene.setActiveShader(this.scene.defaultShader);
 
         this.smokeAppearance.apply();
         for(let smokeParticles of this.smokes){
