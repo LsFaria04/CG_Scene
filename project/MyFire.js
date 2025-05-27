@@ -22,7 +22,7 @@ export class MyFire extends CGFobject {
         this.fireAppearance.setTexture(this.fireTexture);
         this.fireAppearance.setTextureWrap('REPEAT', 'REPEAT');
         this.triangle = new MyTriangleBig(this.scene);
-        this.sphere = new MySphere(this.scene, 60, 60, false, false);
+        this.sphere = new MySphere(this.scene, 10, 10, false, false);
 
         this.smokeAppearance = new CGFappearance(this.scene);
         this.smokeAppearance.setAmbient(0.451, 0.5098, 0.4627, 0.1);
@@ -67,7 +67,6 @@ export class MyFire extends CGFobject {
                 newOrientation.push(this.flameOrientation[i]);
             }
             else{
-                console.log("here")
                 this.releaseSmoke(position);
             }
         }
@@ -80,7 +79,7 @@ export class MyFire extends CGFobject {
     releaseSmoke(position){
         this.smokeActive = true;
         let smokeParticles = [];
-        for (let i = 0; i < 500; i++) {
+        for (let i = 0; i < 5000; i++) {
             let randomOffset = [
                 (Math.random() - 0.5), 
                 0, 
