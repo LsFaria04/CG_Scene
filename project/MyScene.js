@@ -39,7 +39,7 @@ export class MyScene extends CGFscene {
     this.grassTexture = new CGFtexture(this, 'textures/grass.jpg');
     this.leavesTexture = new CGFtexture(this, 'textures/leaves2.jpg');
     this.treeTexture = new CGFtexture(this, 'textures/tree.jpg');
-    this.windowTextures = {"Glass": new CGFtexture(this, 'textures/window1.png'), "Barred": new CGFtexture(this, 'textures/window2.png')};
+    this.windowTexture = new CGFtexture(this, 'textures/window1.png')
 
     //Initialize scene objects
     this.axis = new CGFaxis(this, 20, 1);
@@ -47,18 +47,12 @@ export class MyScene extends CGFscene {
     this.sphere = new MySphere(this, 100, 100, true);
     this.panorama = new MyPanorama(this, this.panoramaTexture, [10,0,10]);
 
-    this.buildingTotalWidth = 50;
-    this.buildingSideFloors = 4;
-    this.buildingWindowsPerFloor = 2;
-    this.selectedWindowTexture = "Glass";
-    this.buildingColor = [0, 0, 0, 1];
-
     this.building = new MyBuilding(
       this,
       50, // total width
       4,
       2,  // windows per floor
-      this.window1Texture,
+      this.windowTexture,
       [0.9, 0.9, 0.9, 1] // light gray color
     );
     this.forest = new MyForest(this, 5, 5, [-50,0,0], 8, this.treeTexture, this.leavesTexture);
@@ -225,7 +219,7 @@ export class MyScene extends CGFscene {
     this.heli.turn(rotation);
     this.heli.acelerate(aceleration);
     this.heli.update(deltaT);
-    this.fire.update(deltaT);
+    this.fire.update(t, deltaT);
 
     //check colision with the fire after all the updates
      if(this.heli.state === HeliStates.RELEASING_WATER){

@@ -312,7 +312,6 @@ export class MyHeli extends CGFobject {
         }
         this.scene.popMatrix();
 
-
         this.scene.translate(this.position[0], this.position[1], this.position[2]); //global position
         this.scene.rotate(Math.PI * this.orientation / 180, 0, 1, 0); //global orientation
 
