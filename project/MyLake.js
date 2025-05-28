@@ -1,4 +1,4 @@
-import { CGFobject, CGFappearance, CGFtexture } from "../lib/CGF.js";
+import { CGFobject, CGFappearance, CGFtexture, CGFshader } from "../lib/CGF.js";
 import { MyCircle } from "./MyCircle.js";
 
 export class MyLake extends CGFobject {
@@ -17,7 +17,14 @@ export class MyLake extends CGFobject {
         this.waterAppearance.setShininess(5.0);
         this.waterAppearance.setTexture(this.waterTexture);
         this.waterAppearance.setTextureWrap('REPEAT', 'REPEAT');
+        this.waterTextureMap = new CGFtexture(this.scene, 'textures/waterMap.jpg');
+        this.waterShader = new CGFshader(this.scene.gl, "shaders/water.vert","shaders/water.frag" );
+        this.waterShader.setUniformsValues({uSampler2: 1 });
         this.circle = new MyCircle(this.scene, 90);
+    }
+
+    update(t){
+        this.waterShader.setUniformsValues({timeFactor: t/ 100 % 1000000});
     }
 
     display(){
@@ -25,8 +32,11 @@ export class MyLake extends CGFobject {
         this.scene.translate(0,0.01,0);
         this.scene.scale(this.radius, 1, this.radius);
         this.scene.rotate(Math.PI * (-90) / 180, 1,0,0);
-        this.waterAppearance.apply();
+        this.scene.setActiveShader(this.waterShader);
+        this.waterTexture.bind(1);
+        this.waterTextureMap.bind();
         this.circle.display();
+        this.scene.setActiveShader(this.scene.defaultShader);
     }
 
 }

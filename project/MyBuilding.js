@@ -2,9 +2,10 @@ import { CGFobject, CGFappearance, CGFtexture } from "../lib/CGF.js";
 import { MyWindow } from "./MyWindow.js";
 import { MyUnitCubeQuad } from "./MyUnitCubeQuad.js";
 import { MyCircle } from "./MyCircle.js";
+import { MySphere } from "./MySphere.js";
 
 export class MyBuilding extends CGFobject {
-    constructor(scene, totalWidth, floors, windowsPerFloor, windowTexture, buildingColor) {
+    constructor(scene, totalWidth, floors, windowsPerFloor, windowTexture, buildingColor, helipadShader) {
         super(scene);
         this.totalWidth = totalWidth;
         this.floors = floors;
@@ -21,10 +22,22 @@ export class MyBuilding extends CGFobject {
         this.window = new MyWindow(scene, windowTexture);
         this.cube = new MyUnitCubeQuad(scene);
         this.circle = new MyCircle(scene, 32);
+        this.sphere = new MySphere(scene, 20, 20, false, false);
 
         this.doorTexture = new CGFtexture(this.scene, 'textures/door.png');
         this.signTexture = new CGFtexture(this.scene, 'textures/sign.png');
         this.helipadTexture = new CGFtexture(this.scene, 'textures/helipad.png');
+        this.helipadTextureUP = new CGFtexture(this.scene, 'textures/helipad_UP.png');
+        this.helipadTextureDOWN = new CGFtexture(this.scene, 'textures/helipad_DOWN.png');
+        this.helipadShader = helipadShader;
+        this.helipadShader.setUniformsValues({ textureUP: 1 });
+        this.helipadShader.setUniformsValues({ textureDOWN: 2 });
+
+        this.lightsmaterial = new CGFappearance(scene);
+        this.lightsmaterial.setAmbient(0, 0, 0, 0.1);
+        this.lightsmaterial.setDiffuse(0, 0, 0, 0.1);
+        this.lightsmaterial.setSpecular(0, 0, 0, 0.1);
+        this.lightsmaterial.setShininess(1.0);
 
         this.door = new MyWindow(scene, this.doorTexture);
         this.sign = new MyWindow(scene, this.signTexture);
@@ -39,6 +52,10 @@ export class MyBuilding extends CGFobject {
         this.buildingAppearance.setDiffuse(...buildingColor);
         this.buildingAppearance.setSpecular(0.1, 0.1, 0.1, 1.0);
         this.buildingAppearance.setShininess(5.0);
+    }
+
+    updateLightMaterial(emission){
+        this.lightsmaterial.setEmission(0.651 * emission, 0.1725 * emission, 0.1686 * emission, 1);
     }
 
     display() {
@@ -142,8 +159,49 @@ export class MyBuilding extends CGFobject {
         this.scene.pushMatrix();
         this.scene.translate(0, 0, roofZ + 0.01);
         this.scene.scale(6.0, 6.0, 1.0);
+        this.scene.rotate(Math.PI * 180 / 180, 0,0,1);
         this.helipadAppearance.apply();
+        this.scene.setActiveShader(this.helipadShader);
+        this.helipadTextureUP.bind(1);
+        this.helipadTextureDOWN.bind(2);
         this.circle.display();
+        this.scene.setActiveShader(this.scene.defaultShader);
+        this.scene.popMatrix();
+
+        //Heliport light 1
+        this.scene.pushMatrix();
+        this.scene.translate(this.centralWidth / 2 - 0.5, this.centralDepth / 2 - 0.5,0);
+        this.scene.translate(0, 0, roofZ);
+        this.scene.scale(0.2, 0.2, 0.2);
+        this.lightsmaterial.apply();
+        this.sphere.display();
+        this.scene.popMatrix();
+
+        //Heliport light 2
+        this.scene.pushMatrix();
+        this.scene.translate(-this.centralWidth / 2 + 0.5, -this.centralDepth / 2 + 0.5,0);
+        this.scene.translate(0, 0, roofZ);
+        this.scene.scale(0.2, 0.2, 0.2);
+        this.lightsmaterial.apply();
+        this.sphere.display();
+        this.scene.popMatrix();
+
+        //Heliport light 3
+        this.scene.pushMatrix();
+        this.scene.translate(-this.centralWidth / 2 + 0.5, this.centralDepth / 2 - 0.5,0);
+        this.scene.translate(0, 0, roofZ);
+        this.scene.scale(0.2, 0.2, 0.2);
+        this.lightsmaterial.apply();
+        this.sphere.display();
+        this.scene.popMatrix();
+
+        //Heliport light 4
+        this.scene.pushMatrix();
+        this.scene.translate(this.centralWidth / 2 - 0.5, -this.centralDepth / 2 + 0.5,0);
+        this.scene.translate(0, 0, roofZ);
+        this.scene.scale(0.2, 0.2, 0.2);
+        this.lightsmaterial.apply();
+        this.sphere.display();
         this.scene.popMatrix();
 
         this.scene.popMatrix(); // pop global rotation

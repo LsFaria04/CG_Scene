@@ -1,4 +1,4 @@
-import { CGFscene, CGFcamera, CGFaxis, CGFappearance, CGFtexture } from "../lib/CGF.js";
+import { CGFscene, CGFcamera, CGFaxis, CGFappearance, CGFtexture, CGFshader } from "../lib/CGF.js";
 import { MyForest } from "./MyForest.js";
 import { HeliStates, MyHeli } from "./MyHeli.js";
 import { MyPanorama } from "./MyPanorama.js";
@@ -41,6 +41,11 @@ export class MyScene extends CGFscene {
     this.treeTexture = new CGFtexture(this, 'textures/tree.jpg');
     this.windowTexture = new CGFtexture(this, 'textures/window1.png')
 
+    //shaders
+    this.helipadShader = new CGFshader(this.gl, "shaders/helipad.vert", "shaders/helipad.frag");
+    this.heliLightsShader = new CGFshader(this.gl, "shaders/heliLights.vert", "shaders/heliLights.frag"); //not used
+
+
     //Initialize scene objects
     this.axis = new CGFaxis(this, 20, 1);
     this.plane = new MyPlane(this, 64, 0, 64, 0, 64);
@@ -53,7 +58,8 @@ export class MyScene extends CGFscene {
       4,
       2,  // windows per floor
       this.windowTexture,
-      [0.9, 0.9, 0.9, 1] // light gray color
+      [0.9, 0.9, 0.9, 1], // light gray color
+      this.helipadShader
     );
     this.forest = new MyForest(this, 5, 5, [-50,0,0], 8, this.treeTexture, this.leavesTexture);
     this.heli = new MyHeli(this, [0,20,0], 0, [0,0,0]);
@@ -79,6 +85,8 @@ export class MyScene extends CGFscene {
     this.initTime = Date.now();
 
     this.speedFactor = 1;
+    this.transitionFactor = 0; //for the mix between textures in the helipad
+    this.emissiveFactor = 0;
 
   }
   initLights() {
@@ -215,6 +223,23 @@ export class MyScene extends CGFscene {
       aceleration = 1.5 * this.speedFactor;
     }
 
+    if (this.heli.state === HeliStates.RISING) {
+        this.helipadShader.setUniformsValues({isLanding: 0});
+        this.transitionFactor = Math.sin(t / 200 % 200); // smooth oscilation
+        this.emissiveFactor = 3 * Math.sin(t / 200 % 200);
+    } else if (this.heli.state === HeliStates.DESCENDING_HELI) {
+      this.helipadShader.setUniformsValues({isLanding: 1});
+        this.transitionFactor = Math.sin(t / 200 % 200); // changes to DOWN
+        this.emissiveFactor = 3 * Math.sin(t / 200 % 200);
+    } else {
+        this.transitionFactor = 0.0; // default state
+        this.emissiveFactor = 0.0;
+    }
+
+    this.helipadShader.setUniformsValues({transitionFactor: this.transitionFactor});
+    this.building.updateLightMaterial(this.emissiveFactor);
+    this.lake.update(t);
+
     const deltaT = t - this.initTime;
     this.heli.turn(rotation);
     this.heli.acelerate(aceleration);
@@ -245,6 +270,8 @@ export class MyScene extends CGFscene {
     this.loadIdentity();
     // Apply transformations corresponding to the camera position relative to the origin
     this.applyViewMatrix();
+
+    this.lights[0].update();
 
     // Draw axis
     this.axis.display();
