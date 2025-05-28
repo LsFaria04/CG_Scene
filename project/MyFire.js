@@ -22,7 +22,7 @@ export class MyFire extends CGFobject {
         this.fireAppearance.setEmission(0.9, 0.9, 0.9, 1);
         this.fireAppearance.setTexture(this.fireTexture);
         this.fireAppearance.setTextureWrap('REPEAT', 'REPEAT');
-        this.triangle = new MyFlameMesh(this.scene);
+        this.triangle = new MyFlameMesh(this.scene, 40, 1,2);
         this.sphere = new MySphere(this.scene, 10, 10, false, false);
         this.fireShader = new CGFshader(this.scene.gl, "shaders/fire.vert","shaders/fire.frag" );
         this.fireShader2 = new CGFshader(this.scene.gl, "shaders/fire2.vert","shaders/fire.frag" );
@@ -44,9 +44,10 @@ export class MyFire extends CGFobject {
             let isXNeg = Math.random() < 0.5 ? true : false;
             let isYNeg = Math.random() < 0.5 ? true : false;
             this.flamePosition.push([isXNeg ? this.centerPosition[0] - offsetX : this.centerPosition[0] + offsetX, isYNeg ? this.centerPosition[1] - offsetY : this.centerPosition[1] + offsetY, this.centerPosition[2]]);
-            this.flameProportions.push([ 1 + Math.random(),1 + Math.random(), 1]);
+            this.flameProportions.push([ 1 + Math.random(),getRandomInt(1,2) + Math.random(), 1]);
             this.flameOrientation.push(Math.PI * 360 * Math.random() / 180);
         }
+        console.log(this.flameProportions)
     }
 
     checkCollisionWithWater(waterDrops){
@@ -139,7 +140,9 @@ export class MyFire extends CGFobject {
             this.scene.popMatrix();
         }
         //rotated flame to be seen in other perspectives
+        
         this.scene.setActiveShader(this.fireShader2);
+        
         for(let i = 0; i < this.flamePosition.length ;i++){
             let position = this.flamePosition.at(i);
             let proportion = this.flameProportions.at(i);

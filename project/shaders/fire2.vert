@@ -18,8 +18,9 @@ void main() {
 
     // Only move vertices above the base
     if (pos.y > 0.0) {
-        float wave = sin(pos.y * 10.0 + timeFactor * 5.0) * 0.2;  // Adjust amplitude and frequency
-        pos.x += wave;
+        float wave = sin(pos.y * 4.0 + timeFactor  * 2.5) * 0.15;  // Adjust amplitude and frequency
+        pos.z += wave;
+        pos.x -= wave;
     }
 
     gl_Position = uPMatrix * uMVMatrix * vec4(pos, 1.0);

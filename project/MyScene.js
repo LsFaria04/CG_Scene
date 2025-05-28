@@ -58,7 +58,7 @@ export class MyScene extends CGFscene {
       50, // total width
       4,
       2,  // windows per floor
-      this.window1Texture,
+      this.windowTextures[this.selectedWindowTexture],
       [0.9, 0.9, 0.9, 1] // light gray color
     );
     this.forest = new MyForest(this, 5, 5, [-50,0,0], 8, this.treeTexture, this.leavesTexture);

@@ -10,7 +10,6 @@ uniform float timeFactor;
 varying vec2 vTextureCoord;
 
 uniform sampler2D uSampler;
-
 void main() {
     vTextureCoord = aTextureCoord;
 
@@ -18,7 +17,7 @@ void main() {
 
     // Only move vertices above the base
     if (pos.y > 0.0) {
-        float wave = sin(pos.y * 10.0 + timeFactor * 5.0) * 0.2;  // Adjust amplitude and frequency
+        float wave = sin(pos.y * 4.0 + timeFactor  * 2.5 ) * 0.15;  // Adjust amplitude and frequency
         pos.zx += wave;
     }
 
