@@ -225,7 +225,7 @@ export class MyScene extends CGFscene {
     this.heli.turn(rotation);
     this.heli.acelerate(aceleration);
     this.heli.update(deltaT);
-    this.fire.update(deltaT);
+    this.fire.update(t, deltaT);
 
     //check colision with the fire after all the updates
      if(this.heli.state === HeliStates.RELEASING_WATER){

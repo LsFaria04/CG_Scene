@@ -15,7 +15,8 @@ void main() {
     vTextureCoord = aTextureCoord;
     vec4 position = vec4(aVertexPosition, 1.0);
     if(position.y > 0.0){
-        position.zx = position.zx + timeFactor;
+        position.x = -1.0 * (position.x + timeFactor);
+        position.z = position.z + timeFactor;
     }
     
 	gl_Position = uPMatrix * uMVMatrix * position;

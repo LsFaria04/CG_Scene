@@ -24,6 +24,7 @@ export class MyFire extends CGFobject {
         this.triangle = new MyTriangleBig(this.scene);
         this.sphere = new MySphere(this.scene, 10, 10, false, false);
         this.fireShader = new CGFshader(this.scene.gl, "shaders/fire.vert","shaders/fire.frag" );
+        this.fireShader2 = new CGFshader(this.scene.gl, "shaders/fire2.vert","shaders/fire.frag" );
 
         this.smokeAppearance = new CGFappearance(this.scene);
         this.smokeAppearance.setAmbient(0.451, 0.5098, 0.4627, 0.1);
@@ -68,6 +69,7 @@ export class MyFire extends CGFobject {
                 newOrientation.push(this.flameOrientation[i]);
             }
             else{
+                console.log("here");
                 this.releaseSmoke(position);
             }
         }
@@ -80,7 +82,7 @@ export class MyFire extends CGFobject {
     releaseSmoke(position){
         this.smokeActive = true;
         let smokeParticles = [];
-        for (let i = 0; i < 5000; i++) {
+        for (let i = 0; i < 2000; i++) {
             let randomOffset = [
                 (Math.random() - 0.5), 
                 0, 
@@ -100,16 +102,18 @@ export class MyFire extends CGFobject {
             const direction = [
                 0,1,0
             ];
-
             
             smokeParticles.push(new MySmokeParticle(this.scene, smokePosition, initialVelocity, direction));
         }
         this.smokes.push(smokeParticles);
     }
 
-    update(t){
-        const timeSeconds = t * 0.001;
-        this.fireShader.setUniformsValues({timeFactor: Math.sin(timeSeconds) * 10 });
+    update(t, deltaT){
+        const timeSeconds = deltaT * 0.001;
+        this.fireShader.setUniformsValues({timeFactor: Math.sin(t / 200 % 200) * 0.5 });
+        this.fireShader.setUniformsValues({timeFactor2: t / 200 % 200 });
+        this.fireShader2.setUniformsValues({timeFactor: Math.sin(t / 200 % 200) * 0.5 });
+        this.fireShader2.setUniformsValues({timeFactor2: t / 200 % 200 });
         for(let i = 0; i < this.smokes.length; i++){
             let smokeParticle = this.smokes[i];
             smokeParticle = smokeParticle.filter(particle => particle.lifetime > 0);
@@ -133,8 +137,9 @@ export class MyFire extends CGFobject {
             this.scene.scale(proportion[0],proportion[1], proportion[2]);
             this.triangle.display(); 
             this.scene.popMatrix();
-        }/*
+        }
         //rotated flame to be seen in other perspectives
+        this.scene.setActiveShader(this.fireShader2);
         for(let i = 0; i < this.flamePosition.length ;i++){
             let position = this.flamePosition.at(i);
             let proportion = this.flameProportions.at(i);
@@ -145,7 +150,7 @@ export class MyFire extends CGFobject {
             this.scene.scale(proportion[0],proportion[1], proportion[2]);
             this.triangle.display(); 
             this.scene.popMatrix();
-        }*/
+        }
         this.scene.setActiveShader(this.scene.defaultShader);
 
         this.smokeAppearance.apply();
