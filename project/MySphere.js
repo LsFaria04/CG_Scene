@@ -31,10 +31,20 @@ export class MySphere extends CGFobject {
         //South Pole
         this.vertices.push(0,-1,0);
         this.texCoords.push(0.5,1);
+        if(this.isInverted)
+            this.normals.push(0,1,0);
+        else
+            this.normals.push(0,-1,0);
 
         //vertices around southPole
         for(let i = 0; i < this.slices + 1; i++){
-            this.vertices.push(Math.sin(inclination * Math.PI / 180) * Math.sin(azimuth * Math.PI / 180), Math.cos(inclination * Math.PI / 180), Math.sin(inclination * Math.PI / 180) * Math.cos(azimuth * Math.PI / 180));
+            if(i == this.slices){
+                this.vertices.push(0, Math.cos(inclination * Math.PI / 180), Math.sin(inclination * Math.PI / 180));
+            }
+            else{
+                this.vertices.push(Math.sin(inclination * Math.PI / 180) * Math.sin(azimuth * Math.PI / 180), Math.cos(inclination * Math.PI / 180), Math.sin(inclination * Math.PI / 180) * Math.cos(azimuth * Math.PI / 180));
+            }
+            
 
             if(this.isInverted)
                 this.normals.push(-(Math.sin(inclination * Math.PI / 180) * Math.sin(azimuth * Math.PI / 180)),-(Math.cos(inclination * Math.PI / 180)),-(Math.sin(inclination * Math.PI / 180) * Math.cos(azimuth * Math.PI / 180)));
@@ -61,12 +71,37 @@ export class MySphere extends CGFobject {
             azimuth = 0;
             //stack vertices
             for(let j = 0; j < this.slices + 1; j++){
-                this.vertices.push(Math.sin(inclination * Math.PI / 180) * Math.sin(azimuth * Math.PI / 180), Math.cos(inclination * Math.PI / 180), Math.sin(inclination * Math.PI / 180) * Math.cos(azimuth * Math.PI / 180));
-                if(this.isInverted)
-                    this.normals.push(-(Math.sin(inclination * Math.PI / 180) * Math.sin(azimuth * Math.PI / 180)),-(Math.cos(inclination * Math.PI / 180)),-(Math.sin(inclination * Math.PI / 180) * Math.cos(azimuth * Math.PI / 180)));
-                else
-                    this.normals.push(Math.sin(inclination * Math.PI / 180) * Math.sin(azimuth * Math.PI / 180), Math.cos(inclination * Math.PI / 180), Math.sin(inclination * Math.PI / 180) * Math.cos(azimuth * Math.PI / 180));
+
+                //check if is the last vertex of the stack to insert it exactly in the right position
+                if(j == this.slices){
+                    this.vertices.push(0, Math.cos(inclination * Math.PI / 180), Math.sin(inclination * Math.PI / 180) );
+                }
+                else{
+                    this.vertices.push(Math.sin(inclination * Math.PI / 180) * Math.sin(azimuth * Math.PI / 180), Math.cos(inclination * Math.PI / 180), Math.sin(inclination * Math.PI / 180) * Math.cos(azimuth * Math.PI / 180));
+                }
+
+                //check if is inverted to invert the normals
+                if(this.isInverted){
+                    if((j == 0) || (j == this.slices)){
+                        this.normals.push(0,-(Math.cos(inclination * Math.PI / 180)),-(Math.sin(inclination * Math.PI / 180)));
+                    }
+                    else{
+                        this.normals.push(-(Math.sin(inclination * Math.PI / 180) * Math.sin(azimuth * Math.PI / 180)),-(Math.cos(inclination * Math.PI / 180)),-(Math.sin(inclination * Math.PI / 180) * Math.cos(azimuth * Math.PI / 180)));
+                    }
+                }
+                else{
+                    if((j == 0) || (j == this.slices)){
+                        this.normals.push(0, Math.cos(inclination * Math.PI / 180), Math.sin(inclination * Math.PI / 180));
+                    }
+                    else{
+                        this.normals.push(Math.sin(inclination * Math.PI / 180) * Math.sin(azimuth * Math.PI / 180), Math.cos(inclination * Math.PI / 180), Math.sin(inclination * Math.PI / 180) * Math.cos(azimuth * Math.PI / 180));
+                    }
+                }
+                
+
                 this.texCoords.push(azimuth / 360, inclination / 180);
+                
+                
                 azimuth += azimuthStep ;
             }
             //stack indices
@@ -91,6 +126,10 @@ export class MySphere extends CGFobject {
             //north pole vertice
             this.vertices.push(0,1,0);
             this.texCoords.push(0.5,0);
+            if(this.isInverted)
+                this.normals.push(0,-1,0);
+            else
+                this.normals.push(0,1,0);
 
             //Connect the north pole vertices
             for(let i = 0; i < this.slices; i++){

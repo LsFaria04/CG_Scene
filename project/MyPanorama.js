@@ -8,7 +8,7 @@ export class MyPanorama extends CGFobject {
         this.scene = scene;
         this.sphere = new MySphere(scene, 100, 100, true);
         this.texture = texture;
-        this.position = position
+        this.position = position;
         this.initBuffers();
     }
     

@@ -47,9 +47,8 @@ export class MyScene extends CGFscene {
 
 
     //Initialize scene objects
-    this.axis = new CGFaxis(this, 20, 1);
     this.plane = new MyPlane(this, 64, 0, 64, 0, 64);
-    this.sphere = new MySphere(this, 100, 100, true);
+    this.sphere = new MySphere(this, 100, 100, false);
     this.panorama = new MyPanorama(this, this.panoramaTexture, [10,0,10]);
 
     this.building = new MyBuilding(
@@ -62,11 +61,14 @@ export class MyScene extends CGFscene {
       this.helipadShader
     );
     this.forest = new MyForest(this, 5, 5, [-50,0,0], 8, this.treeTexture, this.leavesTexture);
+    this.forest2 = new MyForest(this, 5, 5, [60,0,0], 8, this.treeTexture, this.leavesTexture);
+    this.forest3 = new MyForest(this, 5, 10, [0,0,-30], 8, this.treeTexture, this.leavesTexture);
     this.heli = new MyHeli(this, [0,20,0], 0, [0,0,0]);
     //auxiliary values to help calculate if the heli is above the lake
     this.lakeposition = [-30,0,40];
     this.lakeradius = 15;
     this.lake = new MyLake(this, this.lakeposition, this.lakeradius);
+    //auxiliary values to help calculate if the heli is above the fire
     this.firePosition = [-50,0,0];
     this.fireWidth = 5;
     this.fireHeight = 5;
@@ -105,6 +107,7 @@ export class MyScene extends CGFscene {
     );
   }
   checkKeys() {
+    //gets the keys pressed
     var text = "";
     var keysPressed = false;
 
@@ -154,6 +157,8 @@ export class MyScene extends CGFscene {
   }
 
   update(t) {
+    //updates all the important object parameters in the scene
+
     const keysPressed = this.checkKeys();
     let aceleration = 0;
     let rotation = 0;
@@ -203,7 +208,6 @@ export class MyScene extends CGFscene {
     if(keysPressed.includes('R')){
       this.heli.reset();
     }
-
     if(keysPressed.includes('O') && (this.heli.state === HeliStates.CRUISING) && (this.heli.hasWater)){
       if(((this.firePosition[0] - this.fireWidth * 5) < this.heli.position[0])  && ((this.firePosition[0] + this.fireWidth * 5) > this.heli.position[0]) 
       && ((this.firePosition[1] - this.fireHeight * 5) < this.heli.position[2])  && ((this.firePosition[1] + this.fireHeight * 5) > this.heli.position[2])){
@@ -223,6 +227,7 @@ export class MyScene extends CGFscene {
       aceleration = 1.5 * this.speedFactor;
     }
 
+    //set values for the helipad shader
     if (this.heli.state === HeliStates.RISING) {
         this.helipadShader.setUniformsValues({isLanding: 0});
         this.transitionFactor = Math.sin(t / 200 % 200); // smooth oscilation
@@ -273,9 +278,6 @@ export class MyScene extends CGFscene {
 
     this.lights[0].update();
 
-    // Draw axis
-    this.axis.display();
-
     this.setDefaultAppearance();
 
     this.panorama.setPosition(this.camera.position);
@@ -288,6 +290,8 @@ export class MyScene extends CGFscene {
     this.popMatrix();
     
     this.forest.display();
+    this.forest2.display();
+    this.forest3.display();
 
     this.pushMatrix();
     this.heli.display();

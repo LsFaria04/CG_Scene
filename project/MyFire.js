@@ -21,7 +21,7 @@ export class MyFire extends CGFobject {
         this.fireAppearance.setEmission(0.9, 0.9, 0.9, 1);
         this.fireAppearance.setTexture(this.fireTexture);
         this.fireAppearance.setTextureWrap('REPEAT', 'REPEAT');
-        this.triangle = new MyFlame(this.scene, 40, 1,2);
+        this.triangle = new MyFlame(this.scene, 50, 1,2);
         this.sphere = new MySphere(this.scene, 10, 10, false, false);
         this.fireShader = new CGFshader(this.scene.gl, "shaders/fire.vert","shaders/fire.frag" );
         this.fireShader2 = new CGFshader(this.scene.gl, "shaders/fire2.vert","shaders/fire.frag" );
@@ -46,7 +46,6 @@ export class MyFire extends CGFobject {
             this.flameProportions.push([ 1 + Math.random(),getRandomInt(1,2) + Math.random(), 1]);
             this.flameOrientation.push(Math.PI * 360 * Math.random() / 180);
         }
-        console.log(this.flameProportions)
     }
 
     checkCollisionWithWater(waterDrops){

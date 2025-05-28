@@ -11,6 +11,8 @@ export class MyWaterDrop extends CGFobject {
     }
     
     update(dt) {
+        //update the water drop state
+        
         this.velocity[1] -= this.direction[1] * 9.8 * dt; // Gravity effect
         this.velocity[0] -= this.direction[0] * 9.8 * dt; 
         this.velocity[2] -= this.direction[2] * 9.8 * dt; 

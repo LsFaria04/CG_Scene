@@ -7,10 +7,12 @@ export class MySmokeParticle extends CGFobject {
         this.position = position;
         this.velocity = velocity;
         this.direction = direction;
-        this.lifetime = 20.0; // Disappears after 60 seconds
+        this.lifetime = 5.0; // Disappears after 60 seconds
     }
     
     update(dt) {
+        //update the smoke particle parameters
+        
         this.velocity[1] += this.direction[1] * dt; // Slow ascension
         this.velocity[0] += this.direction[0] * dt; 
         this.velocity[2] += this.direction[2] * dt; 

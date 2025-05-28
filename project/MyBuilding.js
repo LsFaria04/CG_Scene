@@ -33,15 +33,17 @@ export class MyBuilding extends CGFobject {
         this.helipadShader.setUniformsValues({ textureUP: 1 });
         this.helipadShader.setUniformsValues({ textureDOWN: 2 });
 
+        this.door = new MyWindow(scene, this.doorTexture);
+        this.sign = new MyWindow(scene, this.signTexture);
+
+        //light appearance
         this.lightsmaterial = new CGFappearance(scene);
         this.lightsmaterial.setAmbient(0, 0, 0, 0.1);
         this.lightsmaterial.setDiffuse(0, 0, 0, 0.1);
         this.lightsmaterial.setSpecular(0, 0, 0, 0.1);
         this.lightsmaterial.setShininess(1.0);
-
-        this.door = new MyWindow(scene, this.doorTexture);
-        this.sign = new MyWindow(scene, this.signTexture);
         
+        //helipad appearance
         this.helipadAppearance = new CGFappearance(scene);
         this.helipadAppearance.setTexture(this.helipadTexture);
         this.helipadAppearance.setTextureWrap('REPEAT', 'REPEAT');

@@ -12,14 +12,18 @@ export class MyLake extends CGFobject {
     }
 
     init(){
+        //water appearance
         this.waterTexture = new CGFtexture(this.scene, 'textures/lake.jpg');
         this.waterAppearance = new CGFappearance(this.scene);
         this.waterAppearance.setShininess(5.0);
         this.waterAppearance.setTexture(this.waterTexture);
         this.waterAppearance.setTextureWrap('REPEAT', 'REPEAT');
         this.waterTextureMap = new CGFtexture(this.scene, 'textures/waterMap.jpg');
+
+        //water shader
         this.waterShader = new CGFshader(this.scene.gl, "shaders/water.vert","shaders/water.frag" );
         this.waterShader.setUniformsValues({uSampler2: 1 });
+        
         this.circle = new MyCircle(this.scene, 90);
     }
 

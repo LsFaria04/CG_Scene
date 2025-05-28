@@ -13,8 +13,10 @@ uniform sampler2D uSampler;
 
 void main() {
     vTextureCoord = aTextureCoord;
+
+    //use a offset to create small waves in the water
     vec3 offset=vec3(0.0,0.0,1.0);
-    offset = aVertexNormal * 0.5 * texture2D(uSampler, vTextureCoord  + vec2(timeFactor * 0.001, timeFactor * 0.001)).b;
+    offset = aVertexNormal * 0.8* texture2D(uSampler, vTextureCoord  + vec2(timeFactor * 0.001, timeFactor * 0.001)).b;
 	gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition + offset, 1.0);
 
 	

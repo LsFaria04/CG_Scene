@@ -33,6 +33,7 @@ export class MyTree extends CGFobject {
             radiusScale -= radiusScaleStep;
         }
 
+        //Tree trunk color
         this.material = new CGFappearance(this.scene);
         this.material.setAmbient(0.29,0.15,0.00, 1.0);
         this.material.setDiffuse(0.29,0.15,0.00, 1.0);
@@ -40,6 +41,7 @@ export class MyTree extends CGFobject {
         this.material.setShininess(1.0);
         this.material.setTexture(this.treeTexture);
 
+        //tree leaves color
         this.material2 = new CGFappearance(this.scene);
         this.material2.setAmbient(this.color[0], this.color[1], this.color[2], 1.0);
         this.material2.setDiffuse(this.color[0], this.color[1], this.color[2], 1.0);
@@ -66,6 +68,7 @@ export class MyTree extends CGFobject {
         const radiusScaleStep = 3 / numbPyramids;
         let radiusScale = 3;
         let translateDist = Math.sin(this.inclination * Math.PI / 180);
+        
         for(let i = 0; i < numbPyramids; i++){
             this.scene.pushMatrix();
             if(this.axis === 'x')

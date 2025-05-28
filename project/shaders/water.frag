@@ -9,7 +9,7 @@ uniform sampler2D uSampler2;
 uniform float timeFactor;
 
 void main() {
-	vec2 animatedUV = fract(vTextureCoord + vec2(timeFactor * 0.0008, timeFactor * 0.0008));
+	vec2 animatedUV = vTextureCoord;
 	vec4 color = texture2D(uSampler2, animatedUV);
 	vec4 color2 = texture2D(uSampler, animatedUV);
 	vec4 finalColor = mix(color, color2, 0.1);

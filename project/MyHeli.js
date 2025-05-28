@@ -57,6 +57,7 @@ export class MyHeli extends CGFobject {
         this.fuselage.setShininess(1.0);
         this.fuselage.loadTexture('textures/helicopter_fuselage.png');
 
+        //silver material with texture to use in silver parts of the helicopter
         this.silverFuselage = new CGFappearance(this.scene);
         this.silverFuselage.setAmbient(1, 1, 1, 0.0);
         this.silverFuselage.setDiffuse(1, 1, 1, 0.0);
@@ -64,12 +65,14 @@ export class MyHeli extends CGFobject {
         this.silverFuselage.setShininess(1.0);
         this.silverFuselage.loadTexture('textures/helicopter_fuselage.png');
 
+        //used in the window
         this.silver = new CGFappearance(this.scene);
         this.silver.setAmbient(0.6627, 0.6227, 0.6784, 0.0);
         this.silver.setDiffuse(0.6627, 0.6227, 0.6784, 0.0);
         this.silver.setSpecular(0.6627, 0.6227, 0.6784, 1.0);
         this.silver.setShininess(1.0);
 
+        //color of the water drops that fall from the bucket
         this.waterColor = new CGFappearance(this.scene);
         this.waterColor.setAmbient(0.5569, 0.8196, 1.0, 0.1);
         this.waterColor.setDiffuse(0.5569, 0.8196, 1.0, 0.1);
@@ -86,6 +89,7 @@ export class MyHeli extends CGFobject {
     }
 
     releaseWater(){
+        //creates the water drops and realeases them
         this.hasWater = false; //bucket is empty because we are releasing all the water
         for (let i = 0; i < 500; i++) {
             let randomOffset = [
@@ -156,6 +160,8 @@ export class MyHeli extends CGFobject {
     }
 
     update(time){
+        //updates the parameteres and state of the helicopter
+
         const timeSeconds = time * 0.001;
 
         //update the heli position
@@ -236,6 +242,8 @@ export class MyHeli extends CGFobject {
     }
 
     turn(v){
+        //Turns the helicopter by v
+
         if(this.state !== HeliStates.CRUISING && this.state !== HeliStates.RETURNING_HELI && this.state !== HeliStates.RELEASING_WATER){
             //can only turn if cruising or returning to the heliport
             return;
@@ -268,7 +276,9 @@ export class MyHeli extends CGFobject {
         this.velocityVec[2] = -Math.sin(Math.PI * this.orientation / 180); 
     }
     acelerate(v){ 
+        //Acceleate the helicopter by v
 
+        
         this.aceleration += v;
         if(v === 0 && this.aceleration > 0){
                 this.aceleration -= 0.5; // decrease aceleration because no aceleration is being added
@@ -386,6 +396,7 @@ export class MyHeli extends CGFobject {
         this.helice.display();
         this.scene.popMatrix();
 
+        //cockpit window
         this.scene.pushMatrix();
         this.scene.translate(3,1.5,0);
         this.scene.rotate(Math.PI * 60 / 180, 0, 0,1);

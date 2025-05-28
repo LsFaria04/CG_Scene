@@ -21,6 +21,8 @@ export class MyForest extends CGFobject {
         this.positions = []; //array with the position of the trees (relative to the center position)
         for(let i = 0; i < this.width; i++){
             for(let j = 0; j < this.height; j++){
+
+                //give some randomness to the various tree parameters
                 let inclination = getRandomInt(-10, 10);
                 let axis = getRandomInt(1,2) === 1 ? 'x' : 'z';
                 let radius = getRandomInt(3,6)/4;
@@ -59,10 +61,11 @@ export class MyForest extends CGFobject {
                 let offsetz = i - (this.width/2);
                 let offsetx = j - (this.height/2);
 
+                //insert the tree in its position
                 this.scene.pushMatrix();
-                this.scene.translate(offsetx * this.treeOffset +  this.positions[i*this.width + j ][0], this.positions[i*this.width + j ][1], offsetz * this.treeOffset + this.positions[i*this.width + j ][2]);  //translate to the expected position
+                this.scene.translate(offsetx * this.treeOffset +  this.positions[i*this.height + j ][0], this.positions[i*this.height + j ][1], offsetz * this.treeOffset + this.positions[i*this.height + j ][2]);  //translate to the expected position
                 this.scene.translate(this.centerposition[0], this.centerposition[1], this.centerposition[2]); //translate to the center of the forest (reference point)
-                this.trees[i*this.width + j ].display();
+                this.trees[i*this.height + j ].display();
                 this.scene.popMatrix();
             }
         }

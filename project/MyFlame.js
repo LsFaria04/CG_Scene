@@ -27,6 +27,7 @@ export class MyFlame extends CGFobject {
             for (let col = 0; col < numPoints; col++) {
                 let x = 0;
                 if (numPoints === 1) {
+                    //point at the top
                     x = 0;
                 } else {
                     x = -rowWidth / 2 + (col / (numPoints - 1)) * rowWidth;
@@ -68,7 +69,6 @@ export class MyFlame extends CGFobject {
                 
                 if(nextRowPoints > 1){
                     // Lower triangle
-                    
                     this.indices.push(
                         rowStart + col + 1,
                         nextRowStart + col,
@@ -84,6 +84,8 @@ export class MyFlame extends CGFobject {
                     );
                 }
             }
+
+            //last triangles in the row
             this.indices.push(
                 rowStart + currentRowPoints - 2,
                 nextRowStart + nextRowPoints - 1,
