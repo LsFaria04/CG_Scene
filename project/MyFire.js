@@ -1,8 +1,7 @@
 import { CGFobject, CGFappearance, CGFtexture, CGFshader } from "../lib/CGF.js";
-import { MyFlameMesh } from "./MyFlameMesh.js";
+import { MyFlame} from "./MyFlame.js";
 import { MySmokeParticle } from "./MySmokeParticle.js";
 import { MySphere } from "./MySphere.js";
-import { MyTriangleBig } from "./MyTriangleBig.js";
 import { getRandomInt } from "./utils.js";
 
 export class MyFire extends CGFobject {
@@ -22,7 +21,7 @@ export class MyFire extends CGFobject {
         this.fireAppearance.setEmission(0.9, 0.9, 0.9, 1);
         this.fireAppearance.setTexture(this.fireTexture);
         this.fireAppearance.setTextureWrap('REPEAT', 'REPEAT');
-        this.triangle = new MyFlameMesh(this.scene, 40, 1,2);
+        this.triangle = new MyFlame(this.scene, 40, 1,2);
         this.sphere = new MySphere(this.scene, 10, 10, false, false);
         this.fireShader = new CGFshader(this.scene.gl, "shaders/fire.vert","shaders/fire.frag" );
         this.fireShader2 = new CGFshader(this.scene.gl, "shaders/fire2.vert","shaders/fire.frag" );

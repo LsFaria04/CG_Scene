@@ -1,6 +1,6 @@
 import {CGFobject} from '../lib/CGF.js';
 
-export class MyFlameMesh extends CGFobject {
+export class MyFlame extends CGFobject {
     constructor(scene, subdivisions = 3, height = 1, width = 1) {
         super(scene);
         this.subdivisions = subdivisions;  // number of horizontal rows

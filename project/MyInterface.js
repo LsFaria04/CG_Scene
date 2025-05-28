@@ -21,25 +21,6 @@ export class MyInterface extends CGFinterface {
 
         this.initKeys();
 
-        var buildingFolder = this.gui.addFolder('Building Settings');
-
-        // Total width
-        buildingFolder.add(this.scene, 'buildingTotalWidth', 50, 100).name('Total Width').onChange(() => this.scene.updateBuilding());
-
-        // Side floors
-        buildingFolder.add(this.scene, 'buildingSideFloors', 1, 10, 1).name('Side Floors').onChange(() => this.scene.updateBuilding());
-
-        // Windows per floor
-        buildingFolder.add(this.scene, 'buildingWindowsPerFloor', 1, 5, 1).name('Windows/Floor').onChange(() => this.scene.updateBuilding());
-
-        // Texture selector
-        buildingFolder.add(this.scene, 'selectedWindowTexture', Object.keys(this.scene.windowTextures))
-            .name('Window Texture')
-            .onChange(() => this.scene.updateBuilding());
-
-        // Building color picker
-        buildingFolder.addColor(this.scene, 'buildingColor').name('Building Color').onChange(() => this.scene.updateBuilding());
-
         return true;
     }
 
