@@ -37,7 +37,7 @@ export class MyFire extends CGFobject {
         this.flamePosition = [];
         this.flameProportions = [];
         this.flameOrientation = [];
-        for(let i = 0; i < 10; i++){
+        for(let i = 0; i < 15; i++){
             let offsetX = Math.random() * (this.width / 2) * 5 ; //mult by 8 because the trees have a separation of at most 8 units from each other
             let offsetY = Math.random() * (this.height / 2) * 5;
             let isXNeg = Math.random() < 0.5 ? true : false;
@@ -57,7 +57,7 @@ export class MyFire extends CGFobject {
             let isActive = true;
             for(let drop of waterDrops){
                 //check colision 
-                if((Math.abs(drop.position[0] - position[0]) < 2) && (Math.abs(drop.position[1] - position[2]) < 2) && (Math.abs(drop.position[2] - position[1]) < 3)){
+                if((Math.abs(drop.position[0] - position[0]) < 0.5) && (Math.abs(drop.position[1] - position[2]) < 0.5) && (Math.abs(drop.position[2] - position[1]) < 3)){
                     isActive = false;
                     break;
                 }

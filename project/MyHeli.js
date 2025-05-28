@@ -31,6 +31,7 @@ export class MyHeli extends CGFobject {
         this.velocityVec = velocityVec;
         this.aceleration = 0;
         this.heliceRotation = 0;
+        this.maxAltitude = position[1] + 10;
         this.state = HeliStates.REST;
         this.orientationToHeliport = 0; //helps the heli to return to the heliport
         this.bucketPercentage = 0; //percante of the bucket that is visible (is outside the heli)
@@ -124,7 +125,7 @@ export class MyHeli extends CGFobject {
         this.state = HeliStates.REST;
         this.velocityVec = [0,0,0];
         this.aceleration = 0;
-        this.position = [0,20,0];
+        this.position = [0,this.maxAltitude - 10,0];
         this.orientation = 0;
         this.hasWater = false;
         this.waterDrops = [];
@@ -166,7 +167,7 @@ export class MyHeli extends CGFobject {
 
         //update the heli position
         if(this.state === HeliStates.RISING || this.state === HeliStates.RISING_LAKE  ){
-            if(this.position[1] > 30){
+            if(this.position[1] > this.maxAltitude ){
                 //cruising altitude reached. Resets the values and change state
                 this.state = HeliStates.CRUISING;
                 this.velocityVec = [0,0,0];
@@ -177,14 +178,14 @@ export class MyHeli extends CGFobject {
             this.position[1] += this.velocityVec[1] * timeSeconds;
 
             if(this.state === HeliStates.RISING){
-                this.bucketPercentage = (this.position[1] - 20) / 10;
+                this.bucketPercentage = (this.position[1] - (this.maxAltitude - 10)) / 10;
                 if(this.bucketPercentage > 1){
                     this.bucketPercentage = 1;
                 }
             }
         }
         else if(this.state === HeliStates.DESCENDING_HELI){
-            if((this.position[1] - 20) <= 0.2){
+            if(this.position[1] < (this.maxAltitude - 9.9)){
                 //Heliport altitude reached. Resets the values and change state
                 this.state = HeliStates.REST;
                 this.velocityVec = [0,0,0];
@@ -193,11 +194,11 @@ export class MyHeli extends CGFobject {
                 return;
             }
             this.position[1] += this.velocityVec[1] * timeSeconds;
-            this.bucketPercentage = Math.abs(this.position[1] - 20) / 10;
+            this.bucketPercentage = Math.abs(this.position[1] - (this.maxAltitude - 10)) / 10;
         }
         else if(this.state === HeliStates.DESCENDING_LAKE){    
             if(this.position[1] <= 8){
-                //the heli bucket id at the lake. Change the state to resting on Lake
+                //the heli bucket is at the lake. Change the state to resting on Lake
                 this.state = HeliStates.ON_LAKE;
                 this.hasWater = true;
                 this.velocityVec = [0,0,0];
@@ -278,7 +279,7 @@ export class MyHeli extends CGFobject {
     acelerate(v){ 
         //Acceleate the helicopter by v
 
-        
+
         this.aceleration += v;
         if(v === 0 && this.aceleration > 0){
                 this.aceleration -= 0.5; // decrease aceleration because no aceleration is being added

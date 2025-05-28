@@ -51,10 +51,11 @@ export class MyScene extends CGFscene {
     this.sphere = new MySphere(this, 100, 100, false);
     this.panorama = new MyPanorama(this, this.panoramaTexture, [10,0,10]);
 
+    this.buildingFloors = 6;
     this.building = new MyBuilding(
       this,
       50, // total width
-      4,
+      this.buildingFloors,
       2,  // windows per floor
       this.windowTexture,
       [0.9, 0.9, 0.9, 1], // light gray color
@@ -63,7 +64,7 @@ export class MyScene extends CGFscene {
     this.forest = new MyForest(this, 5, 5, [-50,0,0], 8, this.treeTexture, this.leavesTexture);
     this.forest2 = new MyForest(this, 5, 5, [60,0,0], 8, this.treeTexture, this.leavesTexture);
     this.forest3 = new MyForest(this, 5, 10, [0,0,-30], 8, this.treeTexture, this.leavesTexture);
-    this.heli = new MyHeli(this, [0,20,0], 0, [0,0,0]);
+    this.heli = new MyHeli(this, [0,4 * this.buildingFloors + 4,0], 0, [0,0,0]);
     //auxiliary values to help calculate if the heli is above the lake
     this.lakeposition = [-30,0,40];
     this.lakeradius = 15;
@@ -102,7 +103,7 @@ export class MyScene extends CGFscene {
       0.7,
       0.1,
       1000,
-      vec3.fromValues(80, 40, 80),
+      vec3.fromValues(0, 60, 110),
       vec3.fromValues(0, 0, 0)
     );
   }
