@@ -13,13 +13,16 @@ uniform sampler2D uSampler;
 
 void main() {
     vTextureCoord = aTextureCoord;
-    vec4 position = vec4(aVertexPosition, 1.0);
-    if(position.y > 0.0){
-        position.x = -1.0 * (position.x + timeFactor);
-        position.z = position.z + timeFactor;
+
+    vec3 pos = aVertexPosition;
+
+    // Only move vertices above the base
+    if (pos.y > 0.0) {
+        float wave = sin(pos.y * 10.0 + timeFactor * 5.0) * 0.2;  // Adjust amplitude and frequency
+        pos.x += wave;
     }
-    
-	gl_Position = uPMatrix * uMVMatrix * position;
+
+    gl_Position = uPMatrix * uMVMatrix * vec4(pos, 1.0);
 
 	
 }

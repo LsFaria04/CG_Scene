@@ -1,4 +1,5 @@
 import { CGFobject, CGFappearance, CGFtexture, CGFshader } from "../lib/CGF.js";
+import { MyFlameMesh } from "./MyFlameMesh.js";
 import { MySmokeParticle } from "./MySmokeParticle.js";
 import { MySphere } from "./MySphere.js";
 import { MyTriangleBig } from "./MyTriangleBig.js";
@@ -21,7 +22,7 @@ export class MyFire extends CGFobject {
         this.fireAppearance.setEmission(0.9, 0.9, 0.9, 1);
         this.fireAppearance.setTexture(this.fireTexture);
         this.fireAppearance.setTextureWrap('REPEAT', 'REPEAT');
-        this.triangle = new MyTriangleBig(this.scene);
+        this.triangle = new MyFlameMesh(this.scene);
         this.sphere = new MySphere(this.scene, 10, 10, false, false);
         this.fireShader = new CGFshader(this.scene.gl, "shaders/fire.vert","shaders/fire.frag" );
         this.fireShader2 = new CGFshader(this.scene.gl, "shaders/fire2.vert","shaders/fire.frag" );
@@ -43,7 +44,7 @@ export class MyFire extends CGFobject {
             let isXNeg = Math.random() < 0.5 ? true : false;
             let isYNeg = Math.random() < 0.5 ? true : false;
             this.flamePosition.push([isXNeg ? this.centerPosition[0] - offsetX : this.centerPosition[0] + offsetX, isYNeg ? this.centerPosition[1] - offsetY : this.centerPosition[1] + offsetY, this.centerPosition[2]]);
-            this.flameProportions.push([ Math.random() * 1.5,getRandomInt(1,2), 1]);
+            this.flameProportions.push([ 1 + Math.random(),1 + Math.random(), 1]);
             this.flameOrientation.push(Math.PI * 360 * Math.random() / 180);
         }
     }
@@ -69,7 +70,6 @@ export class MyFire extends CGFobject {
                 newOrientation.push(this.flameOrientation[i]);
             }
             else{
-                console.log("here");
                 this.releaseSmoke(position);
             }
         }
@@ -110,9 +110,9 @@ export class MyFire extends CGFobject {
 
     update(t, deltaT){
         const timeSeconds = deltaT * 0.001;
-        this.fireShader.setUniformsValues({timeFactor: Math.sin(t / 200 % 200) * 0.5 });
+        this.fireShader.setUniformsValues({timeFactor: t / 500 % 500 });
         this.fireShader.setUniformsValues({timeFactor2: t / 200 % 200 });
-        this.fireShader2.setUniformsValues({timeFactor: Math.sin(t / 200 % 200) * 0.5 });
+        this.fireShader2.setUniformsValues({timeFactor: t / 500 % 500 });
         this.fireShader2.setUniformsValues({timeFactor2: t / 200 % 200 });
         for(let i = 0; i < this.smokes.length; i++){
             let smokeParticle = this.smokes[i];
