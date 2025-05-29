@@ -277,16 +277,28 @@ export class MyHeli extends CGFobject {
         this.velocityVec[2] = -Math.sin(Math.PI * this.orientation / 180); 
     }
     acelerate(v){ 
-        //Acceleate the helicopter by v
+        //Acelerate the helicopter by v
 
 
         this.aceleration += v;
         if(v === 0 && this.aceleration > 0){
+            if(this.aceleration - 0.5 < 0){
+                //to avoid the helicopter to skip stop becasue we used speed factor
+                this.aceleration = 0;
+            }
+            else{
                 this.aceleration -= 0.5; // decrease aceleration because no aceleration is being added
+            }
         }
 
         if(v === 0 && this.aceleration < 0){
+            if(this.aceleration - 0.5 > 0){
+                //to avoid the helicopter to skip stop becasue we used speed factor
+                this.aceleration = 0;
+            }
+            else{
                 this.aceleration += 0.5; // decrease aceleration because no aceleration is being added
+            }
         }
 
         if(this.aceleration > 10){
