@@ -94,8 +94,8 @@ export class MyFire extends CGFobject {
             ];
             const smokePosition = [
                 position[0] + randomOffset[0],
-                position[1] + randomOffset[1],
-                position[2] + randomOffset[2]
+                position[2] + randomOffset[1],
+                position[1] + randomOffset[2]
             ];
 
             const direction = [
