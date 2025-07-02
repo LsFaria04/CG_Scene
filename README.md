@@ -1,16 +1,15 @@
-# CG 2024/2025
+# CG Scene
 
-## Group T12G07
-| Name             | Number    | E-Mail             |
-| ---------------- | --------- | ------------------ |
-| Lucas Faria         | 202207540 | up202207540@up.pt                |
-| António Romão        | 202108704 | up202108704@up.pt                |
+## Context
 
-----
+This project was developed for the Computer Graphics (CG) course at LEIC. It features a 3D scene built with WebGL, showcasing a variety of objects and materials. The scene includes a firefighters' building, a controllable firefighting helicopter, a forest, a lake, and an active forest fire.
 
-  - [tp1](tp1/README.md)
-  - [tp2](tp2/README.md)
-  - [tp3](tp3/README.md)
-  - [tp4](tp4/README.md)
-  - [tp5](tp5/README.md)
-  - [Project](proj/README.md)
+**Project Grade:** 18
+
+## Controls
+
+- **A,W,S,D keys**: controls the movement of the helicopter,
+- **R key**: Reset the helicopter position. (default position is at the top of the building),
+- **P key**: Rises the helicopter until it reaches the cruising altitude,
+- **L key**: Lowers the helicopter. If positioned above the lake, it pauses to collect water; otherwise, it automatically flies to the heliport on the building’s roof and lands.
+- **O key**: Deploys the water from the helicopter’s bucket when positioned above the fire.
